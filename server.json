@@ -1,0 +1,10 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "acoustic-room-mode-radar",
+  "description": "Model Context Protocol (MCP) server for room acoustics engineering: Room modes (Axial, Tangential, Oblique), Bonello & Bolt criteria compliance, Schroeder cutoff frequency, Sabine & Norris-Eyring RT60 reverberation decay, and speaker/sweet-spot placement.",
+  "repository": {
+    "url": "https://github.com/tudadada/acoustic-room-mode-radar",
+    "source": "github"
+  },
+  "homepage": "https://github.com/tudadada/acoustic-room-mode-radar#readme"
+}

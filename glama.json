@@ -1,0 +1,5 @@
+{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "name": "acoustic-room-mode-radar",
+  "description": "Model Context Protocol (MCP) server for room acoustics engineering: Room modes (Axial, Tangential, Oblique), Bonello & Bolt criteria compliance, Schroeder cutoff frequency, Sabine & Norris-Eyring RT60 reverberation decay, and speaker/sweet-spot placement."
+}
