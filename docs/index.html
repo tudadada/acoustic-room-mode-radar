@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Acoustic Studio & Room Mode Radar Simulator</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    /* Custom styling for sliders and blueprint grid */
+    input[type=range] {
+      accent-color: #06b6d4;
+    }
+    .blueprint-bg {
+      background-image: 
+        linear-gradient(rgba(6, 182, 212, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(6, 182, 212, 0.07) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4 md:p-6 font-sans">
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Header & Brand -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-[var(--border)] pb-5 gap-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold text-lg border border-cyan-500/30">🔊</span>
+          <h1 class="text-2xl font-bold tracking-tight text-[var(--foreground)]">Acoustic Room & Speaker Placement Simulator</h1>
+          <span class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Zero-Server Client Utility</span>
+        </div>
+        <p class="text-sm text-[var(--muted-foreground)] mt-1">Interactive physics simulator for room standing wave modes, 38% sweet-spot geometry, SBIR reflection cancellations, and RT60 decay.</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="btnPresetSmall" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] hover:bg-[var(--card)] transition">Vocal Booth (2.8m)</button>
+        <button id="btnPresetMedium" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-cyan-500/40 bg-cyan-500/10 text-cyan-400 transition">Home Studio (4.8m)</button>
+        <button id="btnPresetLarge" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] hover:bg-[var(--card)] transition">Control Room (6.2m)</button>
+      </div>
+    </div>
+
+    <!-- Main Grid: Controls (Left) vs Visual Blueprint & Modes (Right) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- LEFT COLUMN: Dimensional & Material Controls -->
+      <div class="lg:col-span-4 space-y-5">
+        
+        <!-- Room Dimensions Card -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-[var(--foreground)] flex items-center gap-2">
+              <span>📐</span> Room Dimensions (Meters)
+            </h2>
+            <span id="roomVolumeBadge" class="text-xs font-mono px-2 py-0.5 rounded bg-[var(--background)] text-cyan-400 border border-[var(--border)]">43.7 m³</span>
+          </div>
+
+          <!-- Length Slider -->
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs">
+              <span class="text-[var(--muted-foreground)]">Length (Listening Axis)</span>
+              <span id="labelLength" class="font-mono font-medium text-cyan-400">4.80 m</span>
+            </div>
+            <input type="range" id="inputLength" min="2.0" max="10.0" step="0.1" value="4.8" class="w-full h-1.5 bg-[var(--border)] rounded-lg cursor-pointer">
+          </div>
+
+          <!-- Width Slider -->
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs">
+              <span class="text-[var(--muted-foreground)]">Width (Lateral Axis)</span>
+              <span id="labelWidth" class="font-mono font-medium text-cyan-400">3.50 m</span>
+            </div>
+            <input type="range" id="inputWidth" min="2.0" max="8.0" step="0.1" value="3.5" class="w-full h-1.5 bg-[var(--border)] rounded-lg cursor-pointer">
+          </div>
+
+          <!-- Height Slider -->
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs">
+              <span class="text-[var(--muted-foreground)]">Ceiling Height</span>
+              <span id="labelHeight" class="font-mono font-medium text-cyan-400">2.60 m</span>
+            </div>
+            <input type="range" id="inputHeight" min="2.0" max="4.5" step="0.05" value="2.6" class="w-full h-1.5 bg-[var(--border)] rounded-lg cursor-pointer">
+          </div>
+
+          <!-- Proportions Rating -->
+          <div id="ratioBadge" class="p-2.5 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs flex items-center justify-between">
+            <span class="text-[var(--muted-foreground)]">Ratio (H : W : L):</span>
+            <span id="labelRatio" class="font-mono font-semibold text-emerald-400">1.00 : 1.35 : 1.85 (Bolt Area ✅)</span>
+          </div>
+        </div>
+
+        <!-- Speaker & Sweet Spot Controls -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-[var(--foreground)] flex items-center gap-2">
+              <span>🎯</span> Listening & Speaker Geometry
+            </h2>
+            <button id="btnLock38" class="text-xs px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/30">Reset to 38% Rule</button>
+          </div>
+
+          <!-- Listener Y -->
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs">
+              <span class="text-[var(--muted-foreground)]">Chair Distance from Front Wall</span>
+              <span id="labelListenerY" class="font-mono font-medium text-cyan-400">1.83 m (38.2%)</span>
+            </div>
+            <input type="range" id="inputListenerY" min="0.5" max="8.0" step="0.05" value="1.83" class="w-full h-1.5 bg-[var(--border)] rounded-lg cursor-pointer">
+          </div>
+
+          <!-- Speaker Spread -->
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs">
+              <span class="text-[var(--muted-foreground)]">Speaker Triangle Base Spread</span>
+              <span id="labelSpeakerSpread" class="font-mono font-medium text-cyan-400">1.33 m</span>
+            </div>
+            <input type="range" id="inputSpeakerSpread" min="0.8" max="3.0" step="0.05" value="1.33" class="w-full h-1.5 bg-[var(--border)] rounded-lg cursor-pointer">
+          </div>
+
+          <!-- Speaker Front Wall Distance -->
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs">
+              <span class="text-[var(--muted-foreground)]">Speaker Distance to Front Wall</span>
+              <span id="labelSpeakerWall" class="font-mono font-medium text-cyan-400">0.68 m</span>
+            </div>
+            <input type="range" id="inputSpeakerWall" min="0.1" max="2.0" step="0.05" value="0.68" class="w-full h-1.5 bg-[var(--border)] rounded-lg cursor-pointer">
+          </div>
+
+          <!-- SBIR Warning Indicator -->
+          <div id="sbirAlert" class="p-3 rounded-lg border text-xs space-y-1">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Materials & RT60 Controls -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-3">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-[var(--foreground)] flex items-center gap-2">
+            <span>🎚️</span> Surfaces & Target Reverb (RT60)
+          </h2>
+
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <label class="text-[var(--muted-foreground)] block mb-1">Target Use</label>
+              <select id="selectTarget" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg p-2 text-[var(--foreground)]">
+                <option value="podcast">Podcast / Vocal (0.28s)</option>
+                <option value="mixing" selected>Music Mixing (0.32s)</option>
+                <option value="theater">Home Theater (0.40s)</option>
+                <option value="audiophile">Audiophile (0.50s)</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[var(--muted-foreground)] block mb-1">Flooring</label>
+              <select id="selectFloor" class="w-full bg-[var(--background)] border border-[var(--border)] rounded-lg p-2 text-[var(--foreground)]">
+                <option value="hardwood">Hardwood / Parquet</option>
+                <option value="tile">Ceramic / Tile</option>
+                <option value="carpet_commercial">Commercial Carpet</option>
+                <option value="carpet_heavy">Thick Carpet & Pad</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs flex justify-between items-center">
+            <div>
+              <span class="text-[var(--muted-foreground)] block">Estimated RT60:</span>
+              <span id="labelRt60" class="text-lg font-bold font-mono text-amber-400">1.69 s</span>
+            </div>
+            <div class="text-right">
+              <span class="text-[var(--muted-foreground)] block">Acoustic Panels Needed:</span>
+              <span id="labelPanelsNeeded" class="text-sm font-semibold font-mono text-cyan-400">~38 Panels (60x120cm)</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: 2D Blueprint Canvas & Frequency Spectrum -->
+      <div class="lg:col-span-8 space-y-5">
+        
+        <!-- 2D Interactive Blueprint Canvas Card -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <h2 class="text-sm font-semibold uppercase tracking-wider text-[var(--foreground)]">2D Studio Top-Down Blueprint</h2>
+              <span class="text-xs text-[var(--muted-foreground)]">(Scale 1:1 Computed)</span>
+            </div>
+            <div class="flex items-center gap-4 text-xs">
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block"></span> Monitors</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span> Sweet Spot</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-red-500/30 border border-red-500/60 inline-block"></span> 50% Null Zone</span>
+            </div>
+          </div>
+
+          <!-- Canvas Container -->
+          <div class="relative w-full h-[400px] rounded-lg border border-[var(--border)] bg-[#071318] blueprint-bg overflow-hidden flex items-center justify-center">
+            <canvas id="roomCanvas" width="800" height="400" class="w-full h-full block"></canvas>
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-[var(--muted-foreground)] px-1">
+            <span>Front Wall (Reflector / Baffle)</span>
+            <span>Center Modal Axis</span>
+            <span>Rear Wall (Diffusers / Bass Traps)</span>
+          </div>
+        </div>
+
+        <!-- Room Modes Spectral Distribution -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-sm font-semibold uppercase tracking-wider text-[var(--foreground)]">Standing Wave Room Modes Spectrum (20 Hz - 250 Hz)</h2>
+              <p class="text-xs text-[var(--muted-foreground)] mt-0.5">Axial modes carry 100% resonance energy (0 dB). Tangential (-3 dB) and Oblique (-6 dB) modes shown.</p>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-[var(--muted-foreground)] block">Schroeder Cutoff (fs):</span>
+              <span id="labelSchroeder" class="text-sm font-bold font-mono text-cyan-400">179.0 Hz</span>
+            </div>
+          </div>
+
+          <!-- Mode Spectrum Canvas -->
+          <div class="relative w-full h-28 rounded-lg border border-[var(--border)] bg-[#071318] overflow-hidden">
+            <canvas id="modesCanvas" width="800" height="110" class="w-full h-full block"></canvas>
+          </div>
+
+          <!-- Quick Stats Cards below chart -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs">
+              <span class="text-[var(--muted-foreground)] block">Lowest Mode (fmin)</span>
+              <span id="statLowestMode" class="text-sm font-bold font-mono text-red-400">35.8 Hz (Length)</span>
+            </div>
+            <div class="p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs">
+              <span class="text-[var(--muted-foreground)] block">Total Modes (&lt;250Hz)</span>
+              <span id="statTotalModes" class="text-sm font-bold font-mono text-cyan-400">54 Modes</span>
+            </div>
+            <div class="p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs">
+              <span class="text-[var(--muted-foreground)] block">Bonello Criterion</span>
+              <span id="statBonello" class="text-sm font-bold font-mono text-emerald-400">Pass (Smooth)</span>
+            </div>
+            <div class="p-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs">
+              <span class="text-[var(--muted-foreground)] block">Tight Clusters (&lt;1.5Hz)</span>
+              <span id="statClusters" class="text-sm font-bold font-mono text-amber-400">3 Clusters</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Footer CLI Command & Integration snippet -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="px-2 py-1 rounded bg-cyan-500/20 text-cyan-400 font-mono font-bold">CLI &amp; AI MCP Server</span>
+        <span class="text-[var(--muted-foreground)]">Run directly inside Claude Desktop, Cursor, or Terminal without installing:</span>
+        <code class="px-2 py-1 rounded bg-[var(--background)] border border-[var(--border)] font-mono text-cyan-300">npx -y acoustic-room-mode-radar</code>
+      </div>
+      <div class="text-[var(--muted-foreground)]">
+        MIT © datutu <span class="text-cyan-400 font-mono">ceo@dottheworld.com</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // State management
+    const state = {
+      L: 4.80,
+      W: 3.50,
+      H: 2.60,
+      listenerY: 1.83,
+      speakerSpread: 1.33,
+      speakerWall: 0.68,
+      targetPreset: 'mixing',
+      floorMaterial: 'hardwood',
+      c: 343.4 // Speed of sound at 20°C
+    };
+
+    // DOM Elements
+    const inputL = document.getElementById('inputLength');
+    const inputW = document.getElementById('inputWidth');
+    const inputH = document.getElementById('inputHeight');
+    const inputListenerY = document.getElementById('inputListenerY');
+    const inputSpeakerSpread = document.getElementById('inputSpeakerSpread');
+    const inputSpeakerWall = document.getElementById('inputSpeakerWall');
+    const selectTarget = document.getElementById('selectTarget');
+    const selectFloor = document.getElementById('selectFloor');
+
+    const labelL = document.getElementById('labelLength');
+    const labelW = document.getElementById('labelWidth');
+    const labelH = document.getElementById('labelHeight');
+    const labelListenerY = document.getElementById('labelListenerY');
+    const labelSpeakerSpread = document.getElementById('labelSpeakerSpread');
+    const labelSpeakerWall = document.getElementById('labelSpeakerWall');
+    const roomVolumeBadge = document.getElementById('roomVolumeBadge');
+    const labelRatio = document.getElementById('labelRatio');
+    const sbirAlert = document.getElementById('sbirAlert');
+    const labelRt60 = document.getElementById('labelRt60');
+    const labelPanelsNeeded = document.getElementById('labelPanelsNeeded');
+    const labelSchroeder = document.getElementById('labelSchroeder');
+    const statLowestMode = document.getElementById('statLowestMode');
+    const statTotalModes = document.getElementById('statTotalModes');
+    const statBonello = document.getElementById('statBonello');
+    const statClusters = document.getElementById('statClusters');
+
+    const roomCanvas = document.getElementById('roomCanvas');
+    const roomCtx = roomCanvas.getContext('2d');
+    const modesCanvas = document.getElementById('modesCanvas');
+    const modesCtx = modesCanvas.getContext('2d');
+
+    // Preset Handlers
+    document.getElementById('btnPresetSmall').addEventListener('click', () => {
+      setRoomDimensions(2.8, 2.2, 2.4);
+    });
+    document.getElementById('btnPresetMedium').addEventListener('click', () => {
+      setRoomDimensions(4.8, 3.5, 2.6);
+    });
+    document.getElementById('btnPresetLarge').addEventListener('click', () => {
+      setRoomDimensions(6.2, 4.4, 2.9);
+    });
+    document.getElementById('btnLock38').addEventListener('click', () => {
+      state.listenerY = Number((state.L * 0.382).toFixed(2));
+      inputListenerY.value = state.listenerY;
+      updateSimulation();
+    });
+
+    function setRoomDimensions(l, w, h) {
+      state.L = l;
+      state.W = w;
+      state.H = h;
+      inputL.value = l;
+      inputW.value = w;
+      inputH.value = h;
+      inputListenerY.max = (l * 0.85).toFixed(2);
+      state.listenerY = Number((l * 0.382).toFixed(2));
+      inputListenerY.value = state.listenerY;
+      state.speakerSpread = Number(Math.min(1.8, Math.max(1.1, w * 0.38)).toFixed(2));
+      inputSpeakerSpread.value = state.speakerSpread;
+      const triH = (state.speakerSpread * Math.sqrt(3)) / 2;
+      state.speakerWall = Number(Math.max(0.3, state.listenerY - triH).toFixed(2));
+      inputSpeakerWall.value = state.speakerWall;
+      updateSimulation();
+    }
+
+    // Input listeners
+    inputL.addEventListener('input', (e) => {
+      state.L = Number(e.target.value);
+      inputListenerY.max = (state.L * 0.85).toFixed(2);
+      updateSimulation();
+    });
+    inputW.addEventListener('input', (e) => {
+      state.W = Number(e.target.value);
+      inputSpeakerSpread.max = (state.W * 0.8).toFixed(2);
+      updateSimulation();
+    });
+    inputH.addEventListener('input', (e) => {
+      state.H = Number(e.target.value);
+      updateSimulation();
+    });
+    inputListenerY.addEventListener('input', (e) => {
+      state.listenerY = Number(e.target.value);
+      updateSimulation();
+    });
+    inputSpeakerSpread.addEventListener('input', (e) => {
+      state.speakerSpread = Number(e.target.value);
+      updateSimulation();
+    });
+    inputSpeakerWall.addEventListener('input', (e) => {
+      state.speakerWall = Number(e.target.value);
+      updateSimulation();
+    });
+    selectTarget.addEventListener('change', (e) => {
+      state.targetPreset = e.target.value;
+      updateSimulation();
+    });
+    selectFloor.addEventListener('change', (e) => {
+      state.floorMaterial = e.target.value;
+      updateSimulation();
+    });
+
+    function updateSimulation() {
+      // 1. Text Labels
+      labelL.innerText = `${state.L.toFixed(2)} m`;
+      labelW.innerText = `${state.W.toFixed(2)} m`;
+      labelH.innerText = `${state.H.toFixed(2)} m`;
+
+      const pct38 = ((state.listenerY / state.L) * 100).toFixed(1);
+      labelListenerY.innerText = `${state.listenerY.toFixed(2)} m (${pct38}%)`;
+      labelSpeakerSpread.innerText = `${state.speakerSpread.toFixed(2)} m`;
+      labelSpeakerWall.innerText = `${state.speakerWall.toFixed(2)} m`;
+
+      const vol = state.L * state.W * state.H;
+      roomVolumeBadge.innerText = `${vol.toFixed(1)} m³`;
+
+      // 2. Proportion & Bolt Check
+      const dims = [state.L, state.W, state.H].sort((a,b)=>a-b);
+      const rW = dims[1] / dims[0];
+      const rL = dims[2] / dims[0];
+      const inBolt = rW >= 1.2 && rW <= 1.6 && rL >= 1.4 && rL <= 2.2;
+      labelRatio.innerText = `1.00 : ${rW.toFixed(2)} : ${rL.toFixed(2)} ${inBolt ? '(Bolt Area ✅)' : '(Non-optimal ⚠️)'}`;
+      labelRatio.className = inBolt ? "font-mono font-semibold text-emerald-400" : "font-mono font-semibold text-amber-400";
+
+      // 3. SBIR Calculation
+      const sbirNotch = (state.c / (4 * state.speakerWall)).toFixed(1);
+      let sbirBg = "bg-amber-500/10 border-amber-500/30 text-amber-300";
+      let sbirMsg = `⚠️ Quarter-wave cancellation notch at ${sbirNotch} Hz lands in kick/bass punch range (60-200 Hz). Move monitors > 0.9m or flush < 0.2m with rear bass trap.`;
+      if (state.speakerWall < 0.25) {
+        sbirBg = "bg-cyan-500/10 border-cyan-500/30 text-cyan-300";
+        sbirMsg = `✅ Near-wall condition: SBIR notch pushed above 350 Hz where cabinet dampening takes over. Use bass shelf filter.`;
+      } else if (state.speakerWall > 0.85) {
+        sbirBg = "bg-emerald-500/10 border-emerald-500/30 text-emerald-300";
+        sbirMsg = `✅ Far placement: SBIR notch pushed below sub-bass range (< 95 Hz) absorbed by corner traps.`;
+      }
+      sbirAlert.className = `p-3 rounded-lg border text-xs space-y-1 ${sbirBg}`;
+      sbirAlert.innerHTML = `<span class="font-bold block">SBIR Front-Wall Reflection: ${sbirNotch} Hz</span><span>${sbirMsg}</span>`;
+
+      // 4. Calculate RT60
+      const floorArea = state.L * state.W;
+      const wallArea = 2 * (state.L * state.H + state.W * state.H);
+      const ceilArea = floorArea;
+      const totalArea = 2 * (floorArea + state.L * state.H + state.W * state.H);
+
+      const floorAlpha = state.floorMaterial === 'tile' ? 0.02 : (state.floorMaterial.includes('carpet') ? 0.40 : 0.08);
+      const wallAlpha = 0.06; // painted drywall
+      const ceilAlpha = 0.06;
+      const totalSabins = (floorArea * floorAlpha) + (ceilArea * ceilAlpha) + (wallArea * wallAlpha);
+      const avgAlpha = totalSabins / totalArea;
+
+      const rt60Eyring = (0.161 * vol) / (-totalArea * Math.log(1 - Math.min(avgAlpha, 0.98)));
+      labelRt60.innerText = `${rt60Eyring.toFixed(2)} s`;
+
+      let targetRt60 = 0.32;
+      if (state.targetPreset === 'podcast') targetRt60 = 0.28;
+      else if (state.targetPreset === 'theater') targetRt60 = 0.40;
+      else if (state.targetPreset === 'audiophile') targetRt60 = 0.50;
+
+      const neededSabins = (0.161 * vol) / targetRt60;
+      const deltaSabins = Math.max(0, neededSabins - totalSabins);
+      const panelsM2 = deltaSabins / (0.85 - 0.07);
+      const panelCount = Math.ceil(panelsM2 / 0.72);
+      labelPanelsNeeded.innerText = panelCount > 0 ? `~${panelCount} Panels (${panelsM2.toFixed(1)} m²)` : "Optimal (0 Needed)";
+
+      // 5. Calculate Modes & Schroeder
+      const fs = 2000 * Math.sqrt(targetRt60 / vol);
+      labelSchroeder.innerText = `${fs.toFixed(1)} Hz`;
+
+      const modes = computeModes(state.L, state.W, state.H, 250);
+      statTotalModes.innerText = `${modes.length} Modes`;
+      if (modes.length > 0) {
+        statLowestMode.innerText = `${modes[0].f.toFixed(1)} Hz (${modes[0].type})`;
+      }
+
+      // Check clusters
+      let clusters = 0;
+      for (let i = 0; i < modes.length - 1; i++) {
+        if (modes[i+1].f - modes[i].f <= 1.5) clusters++;
+      }
+      statClusters.innerText = `${clusters} Clusters`;
+
+      // Draw Canvases
+      drawBlueprint();
+      drawModesSpectrum(modes, fs);
+    }
+
+    function computeModes(L, W, H, maxF) {
+      const c = state.c;
+      const maxP = Math.ceil((2 * maxF * L) / c);
+      const maxQ = Math.ceil((2 * maxF * W) / c);
+      const maxR = Math.ceil((2 * maxF * H) / c);
+      const list = [];
+
+      for (let p = 0; p <= maxP; p++) {
+        for (let q = 0; q <= maxQ; q++) {
+          for (let r = 0; r <= maxR; r++) {
+            if (p === 0 && q === 0 && r === 0) continue;
+            const f = (c / 2) * Math.sqrt((p / L) ** 2 + (q / W) ** 2 + (r / H) ** 2);
+            if (f <= maxF) {
+              const nonZeros = (p > 0 ? 1 : 0) + (q > 0 ? 1 : 0) + (r > 0 ? 1 : 0);
+              const type = nonZeros === 1 ? 'Axial' : (nonZeros === 2 ? 'Tangential' : 'Oblique');
+              list.push({ f, p, q, r, type });
+            }
+          }
+        }
+      }
+      list.sort((a,b) => a.f - b.f);
+      return list;
+    }
+
+    // 2D Blueprint Renderer
+    function drawBlueprint() {
+      const w = roomCanvas.width;
+      const h = roomCanvas.height;
+      roomCtx.clearRect(0, 0, w, h);
+
+      // Fit room into canvas with margins
+      const pad = 40;
+      const scale = Math.min((w - pad * 2) / state.W, (h - pad * 2) / state.L);
+
+      const roomPixelW = state.W * scale;
+      const roomPixelL = state.L * scale;
+      const originX = (w - roomPixelW) / 2;
+      const originY = (h - roomPixelL) / 2;
+
+      // Draw Room Outer Bounds
+      roomCtx.strokeStyle = 'rgba(6, 182, 212, 0.7)';
+      roomCtx.lineWidth = 3;
+      roomCtx.strokeRect(originX, originY, roomPixelW, roomPixelL);
+
+      // Draw 50% Length Null Zone (Hatched red band)
+      const midY = originY + (roomPixelL * 0.5);
+      const nullBandH = 18;
+      roomCtx.fillStyle = 'rgba(239, 68, 68, 0.15)';
+      roomCtx.fillRect(originX, midY - nullBandH/2, roomPixelW, nullBandH);
+      roomCtx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+      roomCtx.setLineDash([4, 4]);
+      roomCtx.strokeRect(originX, midY - nullBandH/2, roomPixelW, nullBandH);
+      roomCtx.setLineDash([]);
+
+      // Label 50% null
+      roomCtx.fillStyle = 'rgba(239, 68, 68, 0.8)';
+      roomCtx.font = '10px monospace';
+      roomCtx.fillText('50% Length Null (Bass Hole - Avoid Chair)', originX + 10, midY + 3);
+
+      // Draw 38% Rule Reference Line
+      const y38 = originY + (state.L * 0.382 * scale);
+      roomCtx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
+      roomCtx.setLineDash([3, 3]);
+      roomCtx.beginPath();
+      roomCtx.moveTo(originX, y38);
+      roomCtx.lineTo(originX + roomPixelW, y38);
+      roomCtx.stroke();
+      roomCtx.setLineDash([]);
+      roomCtx.fillStyle = 'rgba(16, 185, 129, 0.8)';
+      roomCtx.fillText('38% Golden Plane', originX + roomPixelW - 105, y38 - 4);
+
+      // Listener Coordinates
+      const centerX = originX + roomPixelW / 2;
+      const listenerPixelY = originY + (state.listenerY * scale);
+
+      // Speakers Coordinates
+      const halfSpread = (state.speakerSpread * scale) / 2;
+      const spkLeftX = centerX - halfSpread;
+      const spkRightX = centerX + halfSpread;
+      const spkY = originY + (state.speakerWall * scale);
+
+      // Draw Equilateral Triangle Rays
+      roomCtx.strokeStyle = 'rgba(6, 182, 212, 0.25)';
+      roomCtx.lineWidth = 1.5;
+      roomCtx.beginPath();
+      roomCtx.moveTo(spkLeftX, spkY);
+      roomCtx.lineTo(spkRightX, spkY);
+      roomCtx.lineTo(centerX, listenerPixelY);
+      roomCtx.closePath();
+      roomCtx.stroke();
+
+      // Sound Projection Cones from Speakers
+      drawSoundCone(roomCtx, spkLeftX, spkY, centerX, listenerPixelY);
+      drawSoundCone(roomCtx, spkRightX, spkY, centerX, listenerPixelY);
+
+      // Draw Monitors (Left and Right)
+      drawMonitor(roomCtx, spkLeftX, spkY, 25);
+      drawMonitor(roomCtx, spkRightX, spkY, -25);
+
+      // Draw Listener / Chair
+      roomCtx.fillStyle = '#f59e0b';
+      roomCtx.beginPath();
+      roomCtx.arc(centerX, listenerPixelY, 9, 0, Math.PI * 2);
+      roomCtx.fill();
+      roomCtx.strokeStyle = '#fff';
+      roomCtx.lineWidth = 2;
+      roomCtx.stroke();
+
+      // Chair Label
+      roomCtx.fillStyle = '#fbbf24';
+      roomCtx.font = '11px sans-serif';
+      roomCtx.fillText('Sweet Spot', centerX - 28, listenerPixelY + 22);
+
+      // Dimension labels on borders
+      roomCtx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+      roomCtx.font = '11px monospace';
+      roomCtx.fillText(`W = ${state.W.toFixed(2)}m`, originX + roomPixelW/2 - 25, originY - 12);
+      roomCtx.fillText(`L = ${state.L.toFixed(2)}m`, originX - 35, originY + roomPixelL/2);
+    }
+
+    function drawMonitor(ctx, x, y, angleDeg) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate((angleDeg * Math.PI) / 180);
+      ctx.fillStyle = '#06b6d4';
+      ctx.fillRect(-8, -12, 16, 24);
+      ctx.fillStyle = '#083344';
+      ctx.fillRect(-6, -10, 12, 20);
+      ctx.fillStyle = '#22d3ee';
+      ctx.beginPath();
+      ctx.arc(0, -3, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(0, 5, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawSoundCone(ctx, sx, sy, lx, ly) {
+      const grad = ctx.createRadialGradient(sx, sy, 5, sx, sy, 180);
+      grad.addColorStop(0, 'rgba(6, 182, 212, 0.2)');
+      grad.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      const angle = Math.atan2(ly - sy, lx - sx);
+      ctx.arc(sx, sy, 180, angle - 0.25, angle + 0.25);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Modes Spectrum Renderer
+    function drawModesSpectrum(modes, fs) {
+      const w = modesCanvas.width;
+      const h = modesCanvas.height;
+      modesCtx.clearRect(0, 0, w, h);
+
+      // Frequency range: 20 Hz to 250 Hz
+      const minF = 20;
+      const maxF = 250;
+
+      // Draw background frequency grid lines
+      modesCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      modesCtx.lineWidth = 1;
+      for (let f = 30; f <= maxF; f += 20) {
+        const x = ((f - minF) / (maxF - minF)) * w;
+        modesCtx.beginPath();
+        modesCtx.moveTo(x, 0);
+        modesCtx.lineTo(x, h - 18);
+        modesCtx.stroke();
+        modesCtx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+        modesCtx.font = '9px monospace';
+        modesCtx.fillText(`${f}Hz`, x - 12, h - 5);
+      }
+
+      // Draw Schroeder frequency boundary
+      const xFs = ((fs - minF) / (maxF - minF)) * w;
+      if (xFs >= 0 && xFs <= w) {
+        modesCtx.strokeStyle = '#22d3ee';
+        modesCtx.setLineDash([4, 4]);
+        modesCtx.lineWidth = 2;
+        modesCtx.beginPath();
+        modesCtx.moveTo(xFs, 0);
+        modesCtx.lineTo(xFs, h - 20);
+        modesCtx.stroke();
+        modesCtx.setLineDash([]);
+        modesCtx.fillStyle = '#22d3ee';
+        modesCtx.font = '10px sans-serif';
+        modesCtx.fillText(`fs (${fs.toFixed(0)}Hz)`, xFs + 4, 15);
+      }
+
+      // Draw mode spikes
+      modes.forEach(m => {
+        if (m.f < minF || m.f > maxF) return;
+        const x = ((m.f - minF) / (maxF - minF)) * w;
+
+        let spikeH = h - 35;
+        let color = '#ef4444'; // Axial
+        if (m.type === 'Tangential') {
+          spikeH *= 0.70;
+          color = '#06b6d4';
+        } else if (m.type === 'Oblique') {
+          spikeH *= 0.50;
+          color = '#a855f7';
+        }
+
+        modesCtx.strokeStyle = color;
+        modesCtx.lineWidth = 2;
+        modesCtx.beginPath();
+        modesCtx.moveTo(x, h - 20);
+        modesCtx.lineTo(x, h - 20 - spikeH);
+        modesCtx.stroke();
+
+        // Tip circle
+        modesCtx.fillStyle = color;
+        modesCtx.beginPath();
+        modesCtx.arc(x, h - 20 - spikeH, 2.5, 0, Math.PI * 2);
+        modesCtx.fill();
+      });
+    }
+
+    // Initialize on load
+    updateSimulation();
+  </script>
+</body>
+</html>

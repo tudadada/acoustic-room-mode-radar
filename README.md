@@ -5,6 +5,9 @@
 
 **Acoustic Room Mode Radar (`acoustic-room-mode-radar`)** is a deterministic Model Context Protocol (MCP) server engineered for room acoustics, home studio design, podcast vocal booths, and audio monitoring environments. It provides zero-hallucination mathematical engines for standing wave room modes (Axial, Tangential, Oblique), Bonello and Bolt dimensional criteria compliance, Schroeder crossover cutoff frequency, Sabine & Norris-Eyring RT60 reverberation decay, and optimal speaker/sweet-spot placement.
 
+> 🎮 **Live Interactive Web Simulator**: Experience the zero-install 2D blueprint simulator, sweet-spot 38% rule calculator, and real-time room mode spectrum directly in your browser:  
+> 👉 **[https://tudadada.github.io/acoustic-room-mode-radar/](https://tudadada.github.io/acoustic-room-mode-radar/)**
+
 ---
 
 ## Capabilities & Tools Included
