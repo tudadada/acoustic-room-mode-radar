@@ -6,6 +6,11 @@
   <title>Acoustic Studio Radar 3D Pro | Realistic Studio Acoustics Simulator</title>
   <meta name="description" content="Professional 3D interactive room acoustics studio: Drag-and-drop monitor placement, realistic studio desk, acoustic panels, bass traps, and standing wave modes.">
 
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -13,13 +18,17 @@
       darkMode: 'class',
       theme: {
         extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace']
+          },
           colors: {
             studio: {
-              950: '#040709',
-              900: '#070f14',
-              850: '#0b171f',
-              800: '#10212c',
-              700: '#173140',
+              950: '#060a12',
+              900: '#0b1320',
+              850: '#0f1a2c',
+              800: '#16243b',
+              700: '#1f3352',
               accent: '#06b6d4',
               neon: '#22d3ee',
               gold: '#f59e0b',
@@ -38,35 +47,146 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: #060a12;
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(6, 182, 212, 0.08) 0%, transparent 35%),
+        radial-gradient(circle at 90% 85%, rgba(245, 158, 11, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(15, 26, 44, 0.65) 0%, transparent 100%);
+      background-attachment: fixed;
+    }
+
     /* Custom Scrollbars */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #070f14; }
-    ::-webkit-scrollbar-thumb { background: #173140; border-radius: 3px; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: rgba(11, 19, 32, 0.5); }
+    ::-webkit-scrollbar-thumb { background: rgba(31, 51, 82, 0.8); border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
 
-    .glow-cyan {
-      box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.45);
+    /* Glassmorphism Cards */
+    .glass-card {
+      background: rgba(11, 19, 32, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0 12px 36px -6px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+      border-radius: 1.25rem;
     }
-    .glow-text {
-      text-shadow: 0 0 12px rgba(34, 211, 238, 0.6);
+    .glass-card-sm {
+      background: rgba(15, 26, 44, 0.6);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+      border-radius: 0.875rem;
     }
 
+    /* Tactile Buttons */
+    .btn-tactile {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(22, 36, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-tactile:hover {
+      background: linear-gradient(180deg, rgba(6, 182, 212, 0.2) 0%, rgba(6, 182, 212, 0.06) 100%), rgba(22, 36, 59, 0.95);
+      border-color: rgba(6, 182, 212, 0.4);
+      color: #67e8f9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    .btn-tactile:active {
+      transform: translateY(1px) scale(0.97);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-tactile-accent {
+      background: linear-gradient(180deg, rgba(34, 211, 238, 0.25) 0%, rgba(6, 182, 212, 0.12) 100%), rgba(8, 51, 68, 0.6);
+      border: 1px solid rgba(34, 211, 238, 0.4);
+      color: #a5f3fc;
+      box-shadow: 0 2px 10px rgba(6, 182, 212, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-tactile-accent:hover {
+      background: linear-gradient(180deg, rgba(34, 211, 238, 0.35) 0%, rgba(6, 182, 212, 0.2) 100%), rgba(8, 51, 68, 0.85);
+      border-color: rgba(34, 211, 238, 0.65);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 18px rgba(6, 182, 212, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+    .btn-tactile-accent:active {
+      transform: translateY(1px) scale(0.97);
+    }
+
+    .btn-tactile-gold {
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.12) 100%), rgba(69, 26, 3, 0.55);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fde68a;
+      box-shadow: 0 2px 10px rgba(245, 158, 11, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-tactile-gold:hover {
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.35) 0%, rgba(217, 119, 6, 0.2) 100%), rgba(69, 26, 3, 0.75);
+      border-color: rgba(245, 158, 11, 0.6);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+    .btn-tactile-gold:active {
+      transform: translateY(1px) scale(0.97);
+    }
+
+    .glow-cyan {
+      box-shadow: 0 0 25px -4px rgba(6, 182, 212, 0.45);
+    }
+    .glow-text {
+      text-shadow: 0 0 14px rgba(34, 211, 238, 0.65);
+    }
+
+    /* Studio Fader Range Sliders */
     input[type=range] {
       -webkit-appearance: none;
-      background: #10212c;
+      background: #0f1a2c;
       height: 6px;
-      border-radius: 3px;
-      border: 1px solid #173140;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+      outline: none;
+      transition: all 0.2s;
+    }
+    input[type=range]:hover {
+      border-color: rgba(6, 182, 212, 0.35);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6), 0 0 8px rgba(6, 182, 212, 0.18);
     }
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
-      background: #22d3ee;
-      box-shadow: 0 0 10px #06b6d4;
-      cursor: pointer;
-      border: 2px solid #070f14;
+      background: radial-gradient(circle at 35% 35%, #67e8f9 0%, #0891b2 75%, #0e7490 100%);
+      box-shadow: 0 2px 7px rgba(0, 0, 0, 0.6), 0 0 10px rgba(34, 211, 238, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.85);
+      cursor: grab;
+      border: 2px solid #060a12;
+      transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.7), 0 0 16px rgba(34, 211, 238, 0.85), inset 0 1px 1px #ffffff;
+    }
+    input[type=range]::-webkit-slider-thumb:active {
+      cursor: grabbing;
+      transform: scale(1.08);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.8), 0 0 20px rgba(34, 211, 238, 1);
+    }
+
+    /* Custom Form Select */
+    select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.65rem center;
+      background-repeat: no-repeat;
+      background-size: 1.2em 1.2em;
+      padding-right: 2.2rem;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
     }
 
     /* Resizer & Dragging styles */
@@ -84,9 +204,9 @@
 <body class="bg-studio-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-cyan-500 selection:text-black">
 
   <!-- Header -->
-  <header class="border-b border-studio-800 bg-studio-900/90 backdrop-blur-md sticky top-0 z-50 px-4 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+  <header class="border-b border-white/[0.06] bg-[#070b14]/80 backdrop-blur-xl sticky top-0 z-50 px-4 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 via-teal-500 to-cyan-300 flex items-center justify-center shadow-lg shadow-cyan-500/25 text-black font-black text-xl">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-600 via-teal-500 to-cyan-300 flex items-center justify-center shadow-lg shadow-cyan-500/25 text-black font-black text-xl">
         ∿
       </div>
       <div>
@@ -94,7 +214,7 @@
           <span class="font-extrabold text-base tracking-wider uppercase bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400">
             Acoustic Studio Radar 3D Pro
           </span>
-          <span class="px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 rounded-full font-bold">
+          <span class="px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-widest bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 rounded-full font-bold shadow-[0_0_10px_rgba(6,182,212,0.15)]">
             Interactive Drag &amp; Drop
           </span>
         </div>
@@ -103,20 +223,20 @@
     </div>
 
     <!-- Quick Presets -->
-    <div class="flex items-center gap-2 text-xs">
-      <span class="text-slate-500 hidden sm:inline">Room Preset:</span>
-      <button onclick="applyPreset(3.2, 2.4, 2.5)" class="px-3 py-1.5 rounded-lg border border-studio-700 bg-studio-850 hover:border-cyan-500 hover:text-cyan-400 transition">Vocal Booth</button>
-      <button onclick="applyPreset(4.8, 3.5, 2.6)" class="px-3 py-1.5 rounded-lg border border-cyan-500/60 bg-cyan-950/40 text-cyan-300 shadow-sm transition">Home Studio (4.8m)</button>
-      <button onclick="applyPreset(6.4, 4.6, 2.9)" class="px-3 py-1.5 rounded-lg border border-studio-700 bg-studio-850 hover:border-cyan-500 hover:text-cyan-400 transition">Mastering Suite</button>
+    <div class="flex items-center gap-1.5 text-xs">
+      <span class="text-slate-400 hidden sm:inline text-[11px] font-medium mr-1">Presets:</span>
+      <button onclick="applyPreset(3.2, 2.4, 2.5)" class="btn-tactile px-3 py-1.5 rounded-full text-slate-300 text-xs">🎙️ Vocal Booth</button>
+      <button onclick="applyPreset(4.8, 3.5, 2.6)" class="btn-tactile-accent px-3 py-1.5 rounded-full text-cyan-300 text-xs font-semibold">🎚️ Home Studio (4.8m)</button>
+      <button onclick="applyPreset(6.4, 4.6, 2.9)" class="btn-tactile px-3 py-1.5 rounded-full text-slate-300 text-xs">🎛️ Mastering Suite</button>
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex items-center gap-2.5">
-      <button onclick="copyMcpConfig()" class="px-3 py-1.5 text-xs font-mono rounded-lg border border-studio-700 bg-studio-800 hover:bg-studio-700 flex items-center gap-1.5 transition">
-        <span>📋</span> Copy MCP Command
+    <div class="flex items-center gap-2">
+      <button onclick="copyMcpConfig()" class="btn-tactile px-3 py-1.5 text-xs font-mono rounded-xl flex items-center gap-1.5 text-slate-300">
+        <span>📋</span> Copy MCP
       </button>
-      <a href="https://github.com/tudadada/acoustic-room-mode-radar" target="_blank" class="px-3.5 py-1.5 text-xs rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-bold shadow-md shadow-cyan-500/25 transition">
-        ★ GitHub Repo
+      <a href="https://github.com/tudadada/acoustic-room-mode-radar" target="_blank" class="px-3.5 py-1.5 text-xs rounded-xl bg-gradient-to-r from-cyan-400 to-teal-400 hover:from-cyan-300 hover:to-teal-300 text-black font-extrabold shadow-lg shadow-cyan-500/25 transition active:scale-95">
+        ★ GitHub
       </a>
     </div>
   </header>
@@ -128,70 +248,70 @@
     <aside id="leftSidebar" class="w-full xl:w-[440px] xl:shrink-0 space-y-5 xl:pr-3 overflow-hidden transition-[opacity] duration-150 relative">
 
       <!-- Room Dimensions Card -->
-      <div class="bg-studio-900 border border-studio-800 rounded-2xl p-5 shadow-xl space-y-4">
-        <div class="flex items-center justify-between border-b border-studio-800 pb-3">
-          <div class="flex items-center gap-2">
-            <span class="text-cyan-400">📐</span>
-            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-300">Room Dimensions</h2>
+      <div class="glass-card p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+          <div class="flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-sm shadow-[0_0_10px_rgba(6,182,212,0.2)]">📐</span>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200">Room Dimensions</h2>
           </div>
-          <span id="badgeVolume" class="font-mono text-xs px-2.5 py-0.5 rounded-md bg-studio-950 border border-studio-700 text-cyan-400 font-bold">43.7 m³</span>
+          <span id="badgeVolume" class="font-mono text-xs px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-bold shadow-[0_0_10px_rgba(6,182,212,0.15)]">43.7 m³</span>
         </div>
 
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Length (L - Listening Axis)</span>
-            <span id="valLength" class="font-mono font-bold text-cyan-400">4.80 m</span>
+            <span class="text-slate-400 font-medium">Length (L - Listening Axis)</span>
+            <span id="valLength" class="font-mono font-bold text-cyan-400 px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]">4.80 m</span>
           </div>
           <input type="range" id="inputL" min="2.0" max="10.0" step="0.1" value="4.8" class="w-full">
         </div>
 
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Width (W - Lateral Wall)</span>
-            <span id="valWidth" class="font-mono font-bold text-cyan-400">3.50 m</span>
+            <span class="text-slate-400 font-medium">Width (W - Lateral Wall)</span>
+            <span id="valWidth" class="font-mono font-bold text-cyan-400 px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]">3.50 m</span>
           </div>
           <input type="range" id="inputW" min="2.0" max="8.0" step="0.1" value="3.5" class="w-full">
         </div>
 
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Height (H - Ceiling)</span>
-            <span id="valHeight" class="font-mono font-bold text-cyan-400">2.60 m</span>
+            <span class="text-slate-400 font-medium">Height (H - Ceiling)</span>
+            <span id="valHeight" class="font-mono font-bold text-cyan-400 px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]">2.60 m</span>
           </div>
           <input type="range" id="inputH" min="2.0" max="4.5" step="0.05" value="2.6" class="w-full">
         </div>
 
         <!-- Bolt Area Compliance Badge -->
-        <div id="boxBolt" class="p-3 rounded-xl bg-studio-950 border border-studio-800 flex items-center justify-between text-xs">
+        <div id="boxBolt" class="glass-card-sm p-3.5 flex items-center justify-between text-xs">
           <span class="text-slate-400">Ratio (H : W : L):</span>
           <span id="valBoltRatio" class="font-mono font-bold text-emerald-400">1.00 : 1.35 : 1.85 (Bolt Area ✅)</span>
         </div>
       </div>
 
       <!-- Speaker & Chair Position Card -->
-      <div class="bg-studio-900 border border-studio-800 rounded-2xl p-5 shadow-xl space-y-4">
-        <div class="flex items-center justify-between border-b border-studio-800 pb-3">
-          <div class="flex items-center gap-2">
-            <span class="text-studio-gold">🎮</span>
-            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-300">Monitors &amp; Sweet Spot</h2>
+      <div class="glass-card p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+          <div class="flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-sm shadow-[0_0_10px_rgba(245,158,11,0.2)]">🎛️</span>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200">Monitors &amp; Sweet Spot</h2>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="resetTo38Rule()" class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 transition">
+            <button onclick="resetTo38Rule()" class="btn-tactile-accent text-[11px] font-bold px-3 py-1 rounded-full">
               Apply 38% Rule
             </button>
           </div>
         </div>
 
-        <div class="p-2.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs flex items-center gap-2">
-          <span>💡</span>
-          <span><strong>Mẹo:</strong> Bạn có thể dùng chuột <strong>bấm trực tiếp vào Loa hoặc Ghế</strong> trong khung nhìn 3D để kéo di chuyển tự do!</span>
+        <div class="p-3 rounded-xl bg-cyan-500/[0.08] border border-cyan-500/20 text-cyan-200 text-xs flex items-center gap-2.5 leading-relaxed">
+          <span class="text-base shrink-0">💡</span>
+          <span><strong>Mẹo tương tác:</strong> Bạn có thể dùng chuột <strong>bấm trực tiếp vào Loa hoặc Ghế</strong> trong không gian 3D để kéo di chuyển tự do!</span>
         </div>
 
         <!-- Listener Y Distance -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Chair Distance from Front Wall</span>
-            <span id="valListenerY" class="font-mono font-bold text-cyan-400">1.83 m (38.2%)</span>
+            <span class="text-slate-400 font-medium">Chair Distance from Front Wall</span>
+            <span id="valListenerY" class="font-mono font-bold text-cyan-400 px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]">1.83 m (38.2%)</span>
           </div>
           <input type="range" id="inputListenerY" min="0.5" max="8.0" step="0.05" value="1.83" class="w-full">
         </div>
@@ -199,8 +319,8 @@
         <!-- Speaker Base Spread -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Speaker Triangle Spread</span>
-            <span id="valSpeakerSpread" class="font-mono font-bold text-cyan-400">1.33 m</span>
+            <span class="text-slate-400 font-medium">Speaker Triangle Spread (L-R)</span>
+            <span id="valSpeakerSpread" class="font-mono font-bold text-cyan-400 px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]">1.33 m</span>
           </div>
           <input type="range" id="inputSpeakerSpread" min="0.8" max="3.5" step="0.05" value="1.33" class="w-full">
         </div>
@@ -208,16 +328,16 @@
         <!-- Speaker Distance to Front Wall -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Speaker Distance to Front Wall</span>
-            <span id="valSpeakerWall" class="font-mono font-bold text-cyan-400">0.68 m</span>
+            <span class="text-slate-400 font-medium">Speaker Distance to Front Wall</span>
+            <span id="valSpeakerWall" class="font-mono font-bold text-cyan-400 px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]">0.68 m</span>
           </div>
           <input type="range" id="inputSpeakerWall" min="0.1" max="2.5" step="0.05" value="0.68" class="w-full">
         </div>
 
         <!-- Equilateral Triangle Verification Badge -->
-        <div id="boxTriangle" class="p-3 rounded-xl bg-studio-950 border border-studio-800 space-y-1.5 text-xs">
+        <div id="boxTriangle" class="glass-card-sm p-3.5 space-y-2 text-xs">
           <div class="flex items-center justify-between">
-            <span class="text-slate-400">Stereo Triangle (60° Rule):</span>
+            <span class="text-slate-400 font-medium">Stereo Triangle (60° Rule):</span>
             <span id="badgeTriangleMatch" class="font-mono font-bold text-emerald-400">🎯 Perfect 60.0° Match</span>
           </div>
           <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono">
@@ -253,42 +373,42 @@
         </div>
 
         <!-- Auto Aim Laser Button -->
-        <div class="flex items-center justify-between text-xs pt-0.5">
-          <span class="text-slate-400 flex items-center gap-1.5">
+        <div class="flex items-center justify-between text-xs pt-1">
+          <span class="text-slate-400 flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
             Laser Guide &amp; Alignment:
           </span>
-          <button id="btnAutoAim" onclick="toggleAutoAim()" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[11px] font-bold hover:bg-cyan-500/30 transition">
+          <button id="btnAutoAim" onclick="toggleAutoAim()" class="btn-tactile-accent px-3 py-1 rounded-full text-[11px] font-bold">
             Auto-Aim to Ears: ON
           </button>
         </div>
 
         <!-- SBIR Alert Box -->
-        <div id="boxSbir" class="p-3.5 rounded-xl border text-xs space-y-1 bg-amber-500/10 border-amber-500/30 text-amber-300">
+        <div id="boxSbir" class="p-3.5 rounded-xl border text-xs space-y-1.5 bg-amber-500/[0.08] border-amber-500/25 text-amber-200">
           <div class="flex items-center justify-between font-bold">
-            <span>SBIR Front Wall Cancellation: <span id="valSbirFreq">126.2 Hz</span></span>
-            <span class="px-2 py-0.5 rounded text-[10px] bg-amber-500/20 uppercase font-mono">Critical Notch</span>
+            <span>SBIR Front Wall Cancellation: <span id="valSbirFreq" class="font-mono text-amber-300">126.2 Hz</span></span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/20 text-amber-300 uppercase font-mono tracking-wider">Critical Notch</span>
           </div>
           <p id="descSbir" class="text-slate-300 text-[11px] leading-relaxed">
-            Quarter-wavelength reflection null lands in punchy kick/bass range. Pull speakers > 0.9m or push < 0.2m with thick bass trap.
+            Quarter-wavelength reflection null lands in punchy kick/bass range. Pull speakers &gt; 0.9m or push &lt; 0.2m with thick bass trap.
           </p>
         </div>
       </div>
 
       <!-- Acoustic Decay (RT60) -->
-      <div class="bg-studio-900 border border-studio-800 rounded-2xl p-5 shadow-xl space-y-4">
-        <div class="flex items-center justify-between border-b border-studio-800 pb-3">
-          <div class="flex items-center gap-2">
-            <span class="text-emerald-400">🎚️</span>
-            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-300">Reverb Time (RT60) &amp; Panels</h2>
+      <div class="glass-card p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+          <div class="flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-sm shadow-[0_0_10px_rgba(16,185,129,0.2)]">🎚️</span>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200">Reverb Time (RT60) &amp; Panels</h2>
           </div>
           <span class="text-[11px] text-slate-400 font-mono">Norris-Eyring Model</span>
         </div>
 
         <div class="grid grid-cols-2 gap-3 text-xs">
           <div>
-            <label class="text-slate-400 block mb-1.5">Target Use</label>
-            <select id="selTarget" onchange="recalculate()" class="w-full bg-studio-950 border border-studio-700 rounded-lg p-2 text-slate-200">
+            <label class="text-slate-400 block mb-1.5 font-medium">Target Usage</label>
+            <select id="selTarget" onchange="recalculate()" class="w-full bg-[#0b1320] border border-white/10 rounded-xl p-2.5 text-slate-200 focus:border-cyan-400 outline-none transition">
               <option value="podcast">Podcast / Vocal (0.28s)</option>
               <option value="mixing" selected>Studio Mixing (0.32s)</option>
               <option value="theater">Home Theater (0.40s)</option>
@@ -296,8 +416,8 @@
             </select>
           </div>
           <div>
-            <label class="text-slate-400 block mb-1.5">Floor Material</label>
-            <select id="selFloor" onchange="recalculate()" class="w-full bg-studio-950 border border-studio-700 rounded-lg p-2 text-slate-200">
+            <label class="text-slate-400 block mb-1.5 font-medium">Floor Material</label>
+            <select id="selFloor" onchange="recalculate()" class="w-full bg-[#0b1320] border border-white/10 rounded-xl p-2.5 text-slate-200 focus:border-cyan-400 outline-none transition">
               <option value="hardwood" selected>Hardwood Parquet</option>
               <option value="tile">Ceramic Tile</option>
               <option value="carpet_commercial">Commercial Carpet</option>
@@ -307,10 +427,10 @@
         </div>
 
         <!-- Meter -->
-        <div class="p-3.5 rounded-xl bg-studio-950 border border-studio-800 flex items-center justify-between">
+        <div class="glass-card-sm p-4 flex items-center justify-between">
           <div>
             <span class="text-[11px] text-slate-400 block">Current Mid RT60:</span>
-            <span id="valRt60" class="text-xl font-mono font-extrabold text-amber-400">1.69 s</span>
+            <span id="valRt60" class="text-2xl font-mono font-extrabold text-amber-400 tracking-tight">1.69 s</span>
           </div>
           <div class="text-right">
             <span class="text-[11px] text-slate-400 block">Absorbers Needed:</span>
@@ -342,69 +462,70 @@
     <section id="rightPanel" class="flex-1 min-w-0 w-full space-y-6 xl:pl-3">
 
       <!-- 3D Realistic Viewport -->
-      <div class="bg-studio-900 border border-studio-800 rounded-2xl p-5 shadow-2xl space-y-3 relative overflow-hidden">
+      <div class="glass-card p-4 lg:p-5 space-y-3.5 relative overflow-hidden">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-2.5">
-            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-200 flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#22d3ee] animate-pulse"></span>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-100">
               Realistic 3D Studio Simulator
             </h2>
             <span class="text-[11px] text-slate-400 font-mono hidden sm:inline">(Hover • Drag Objects • Rotate 3D View)</span>
           </div>
 
-          <!-- 3D Display Controls -->
-          <div class="flex items-center gap-1.5 text-xs bg-studio-950 p-1 rounded-lg border border-studio-800 flex-wrap">
-            <button id="btnExpandCollapseHeader" onclick="toggleSidebarCollapse()" class="px-2.5 py-1 rounded bg-studio-800 hover:bg-studio-700 text-slate-300 border border-studio-700 flex items-center gap-1 transition" title="Ẩn/Hiện thanh menu bên trái">
+          <!-- 3D Display Controls (Floating frosted pill dock) -->
+          <div class="flex items-center gap-1.5 text-xs p-1 rounded-2xl bg-black/50 backdrop-blur-xl border border-white/10 flex-wrap shadow-2xl">
+            <button id="btnExpandCollapseHeader" onclick="toggleSidebarCollapse()" class="btn-tactile px-3 py-1.5 rounded-xl text-slate-300 flex items-center gap-1 text-xs" title="Ẩn/Hiện thanh menu bên trái">
               <span id="iconExpandCollapse">◀</span> <span id="textExpandCollapse" class="hidden md:inline">Thu Gọn Menu</span>
             </button>
-            <button onclick="setCameraView('perspective')" class="px-2.5 py-1 rounded hover:bg-studio-800 text-slate-300 transition">Perspective</button>
-            <button onclick="setCameraView('top')" class="px-2.5 py-1 rounded hover:bg-studio-800 text-slate-300 transition">Top View</button>
-            <button onclick="setCameraView('sweetspot')" class="px-2.5 py-1 rounded hover:bg-studio-800 text-cyan-400 transition">Sweet Spot</button>
-            <button onclick="toggleHeatmap()" id="btnHeatmap" class="px-2.5 py-1 rounded bg-studio-800 hover:bg-studio-700 text-amber-300 border border-amber-500/30">Heatmap: OFF</button>
-            <button onclick="toggleSoundWaves()" id="btnWaveToggle" class="px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">Waves: ON</button>
-            <button onclick="toggleMirrors()" id="btnMirrorToggle" class="px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">Mirrors: ON</button>
+            <button onclick="setCameraView('perspective')" class="btn-tactile px-3 py-1.5 rounded-xl text-slate-300 text-xs">Perspective</button>
+            <button onclick="setCameraView('top')" class="btn-tactile px-3 py-1.5 rounded-xl text-slate-300 text-xs">Top View</button>
+            <button onclick="setCameraView('sweetspot')" class="btn-tactile-accent px-3 py-1.5 rounded-xl text-cyan-300 text-xs">Sweet Spot</button>
+            <button onclick="toggleHeatmap()" id="btnHeatmap" class="btn-tactile px-3 py-1.5 rounded-xl text-amber-300 text-xs">Heatmap: OFF</button>
+            <button onclick="toggleSoundWaves()" id="btnWaveToggle" class="btn-tactile-accent px-3 py-1.5 rounded-xl text-cyan-300 text-xs">Waves: ON</button>
+            <button onclick="toggleMirrors()" id="btnMirrorToggle" class="btn-tactile-accent px-3 py-1.5 rounded-xl text-cyan-300 text-xs">Mirrors: ON</button>
           </div>
         </div>
 
         <!-- Three.js Canvas Container -->
-        <div id="threeContainer" class="w-full h-[520px] rounded-xl overflow-hidden bg-black relative border border-studio-800 shadow-inner cursor-grab active:cursor-grabbing">
+        <div id="threeContainer" class="w-full h-[520px] rounded-2xl overflow-hidden bg-black/90 relative border border-white/10 shadow-[inset_0_2px_16px_rgba(0,0,0,0.85)] cursor-grab active:cursor-grabbing">
           <!-- WebGL Canvas attached here -->
           
           <!-- Dynamic Floating HUD when dragging object -->
-          <div id="dragHud" class="absolute top-3 right-3 pointer-events-none text-xs font-mono text-cyan-300 bg-studio-950/90 backdrop-blur-md px-3 py-2 rounded-xl border border-cyan-500/30 shadow-lg hidden">
+          <div id="dragHud" class="absolute top-3.5 right-3.5 pointer-events-none text-xs font-mono text-cyan-300 bg-slate-950/90 backdrop-blur-xl px-4 py-2.5 rounded-2xl border border-cyan-500/40 shadow-2xl hidden flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
             <span id="dragHudText">Dragging: Left Monitor</span>
           </div>
 
-          <div class="absolute bottom-3 left-3 pointer-events-none text-[10px] font-mono text-cyan-400/80 bg-studio-950/85 px-2.5 py-1 rounded border border-cyan-500/20 backdrop-blur-sm">
+          <div class="absolute bottom-3.5 left-3.5 pointer-events-none text-[10px] font-mono text-cyan-400/90 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-white/10 backdrop-blur-md shadow-lg">
             Realistic PBR Shaders • Soft Studio Lighting • 60 FPS
           </div>
         </div>
 
         <!-- 3D Studio Legend -->
         <div class="flex flex-wrap items-center justify-between text-xs text-slate-400 px-1 pt-1 gap-4">
-          <div class="flex items-center gap-4">
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-cyan-400 inline-block shadow-sm shadow-cyan-400"></span> Studio Monitors (Draggable)</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400 inline-block shadow-sm shadow-amber-400"></span> Producer Chair (Draggable)</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-red-500/30 border border-red-500 inline-block"></span> 50% Bass Null Plane</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 border-2 border-dashed border-amber-400 inline-block"></span> Mirror Reflection Rays</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-slate-700 border border-cyan-500/50 inline-block"></span> Acoustic Panels &amp; Bass Traps</span>
+          <div class="flex items-center gap-4 flex-wrap">
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block shadow-[0_0_8px_#22d3ee]"></span> Studio Monitors (Draggable)</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block shadow-[0_0_8px_#fbbf24]"></span> Producer Chair (Draggable)</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-red-500/40 border border-red-500 rounded-sm inline-block"></span> 50% Bass Null Plane</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 border-2 border-dashed border-amber-400 rounded-sm inline-block"></span> Mirror Reflection Rays</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-slate-700 border border-cyan-500/50 rounded-sm inline-block"></span> Acoustic Panels &amp; Bass Traps</span>
           </div>
-          <div class="font-mono text-slate-500">
-            Z: Front Wall (0.0m) ➔ Back Wall (<span id="labelMaxZ">4.80m</span>)
+          <div class="font-mono text-slate-500 text-[11px]">
+            Z: Front Wall (0.0m) ➔ Back Wall (<span id="labelMaxZ" class="text-cyan-400 font-semibold">4.80m</span>)
           </div>
         </div>
       </div>
 
       <!-- Real-Time Modal Spectrum Analyzer (RTA) -->
-      <div class="bg-studio-900 border border-studio-800 rounded-2xl p-5 shadow-2xl space-y-4">
+      <div class="glass-card p-5 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-200">Standing Wave Room Modes Spectrum (20 Hz - 250 Hz)</h2>
-            <p class="text-xs text-slate-400 mt-0.5">Axial modes (0 dB, red) cause severe boom. Tangential (-3 dB, cyan) &amp; Oblique (-6 dB, purple) modes analyzed.</p>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-100">Standing Wave Room Modes Spectrum (20 Hz - 250 Hz)</h2>
+            <p class="text-xs text-slate-400 mt-1">Axial modes (0 dB, red) cause severe boom. Tangential (-3 dB, cyan) &amp; Oblique (-6 dB, purple) modes analyzed.</p>
           </div>
           <div class="text-right">
-            <span class="text-[11px] text-slate-400 block">Schroeder Transition Cutoff (fs):</span>
-            <span id="valSchroeder" class="text-base font-mono font-extrabold text-cyan-400 glow-text">179.0 Hz</span>
+            <span class="text-[11px] text-slate-400 block font-medium">Schroeder Transition Cutoff (fs):</span>
+            <span id="valSchroeder" class="text-lg font-mono font-extrabold text-cyan-400 glow-text">179.0 Hz</span>
           </div>
         </div>
 
@@ -414,20 +535,20 @@
 
         <!-- Quick Acoustic Metrics -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-1">
-          <div class="p-3 rounded-xl bg-studio-950 border border-studio-800">
-            <span class="text-[11px] text-slate-400 block">Lowest Resonance (fmin)</span>
+          <div class="glass-card-sm p-3.5">
+            <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Lowest Resonance (fmin)</span>
             <span id="statFmin" class="text-sm font-bold font-mono text-red-400">35.8 Hz (Length)</span>
           </div>
-          <div class="p-3 rounded-xl bg-studio-950 border border-studio-800">
-            <span class="text-[11px] text-slate-400 block">Modes in Band (&lt;250Hz)</span>
+          <div class="glass-card-sm p-3.5">
+            <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Modes in Band (&lt;250Hz)</span>
             <span id="statCount" class="text-sm font-bold font-mono text-cyan-400">54 Modes</span>
           </div>
-          <div class="p-3 rounded-xl bg-studio-950 border border-studio-800">
-            <span class="text-[11px] text-slate-400 block">Bonello Criterion</span>
+          <div class="glass-card-sm p-3.5">
+            <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Bonello Criterion</span>
             <span id="statBonello" class="text-sm font-bold font-mono text-emerald-400">PASS (Smooth Growth)</span>
           </div>
-          <div class="p-3 rounded-xl bg-studio-950 border border-studio-800">
-            <span class="text-[11px] text-slate-400 block">Resonance Clusters (&lt;1.5Hz)</span>
+          <div class="glass-card-sm p-3.5">
+            <span class="text-[11px] text-slate-400 block mb-0.5 font-medium">Resonance Clusters (&lt;1.5Hz)</span>
             <span id="statClusters" class="text-sm font-bold font-mono text-amber-400">3 Clusters</span>
           </div>
         </div>
@@ -436,14 +557,14 @@
     </section>
 
     <!-- Floating Button to restore Sidebar when collapsed -->
-    <button id="btnFloatingExpand" onclick="toggleSidebarCollapse()" class="hidden fixed bottom-6 left-6 z-40 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-black font-extrabold shadow-2xl shadow-cyan-500/30 flex items-center gap-2 text-xs transition transform hover:scale-105 active:scale-95">
+    <button id="btnFloatingExpand" onclick="toggleSidebarCollapse()" class="hidden fixed bottom-6 left-6 z-40 px-4 py-2.5 rounded-full bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-black font-extrabold shadow-2xl shadow-cyan-500/30 flex items-center gap-2 text-xs transition transform hover:scale-105 active:scale-95">
       <span>🎛️</span> Mở Bảng Điều Khiển
     </button>
 
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-studio-800 bg-studio-900/60 py-4 px-6 text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-3">
+  <footer class="border-t border-white/[0.06] bg-[#070b14]/70 py-4 px-6 text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-3">
     <div>
       Acoustic Studio Radar 3D • Pure Open-Source Physics Engine • Standard ISO 3382-1 &amp; Rayleigh Theory
     </div>
