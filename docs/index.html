@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Acoustic Studio Radar | 3D Room Mode & Speaker Placement Simulator</title>
-  <meta name="description" content="Professional 3D room acoustics simulator: Standing wave room modes, 38% rule sweet spot, SBIR cancellation analysis, and RT60 reverberation decay.">
+  <title>Acoustic Studio Radar 3D Pro | Realistic Studio Acoustics Simulator</title>
+  <meta name="description" content="Professional 3D interactive room acoustics studio: Drag-and-drop monitor placement, realistic studio desk, acoustic panels, bass traps, and standing wave modes.">
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -15,11 +15,11 @@
         extend: {
           colors: {
             studio: {
-              950: '#05090b',
-              900: '#081116',
-              850: '#0c1920',
-              800: '#11222b',
-              700: '#193442',
+              950: '#040709',
+              900: '#070f14',
+              850: '#0b171f',
+              800: '#10212c',
+              700: '#173140',
               accent: '#06b6d4',
               neon: '#22d3ee',
               gold: '#f59e0b',
@@ -38,25 +38,25 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    /* Custom Scrollbars & Blueprint Grid */
+    /* Custom Scrollbars */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #081116; }
-    ::-webkit-scrollbar-thumb { background: #193442; border-radius: 3px; }
+    ::-webkit-scrollbar-track { background: #070f14; }
+    ::-webkit-scrollbar-thumb { background: #173140; border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
 
     .glow-cyan {
-      box-shadow: 0 0 20px -5px rgba(6, 182, 212, 0.4);
+      box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.45);
     }
     .glow-text {
-      text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+      text-shadow: 0 0 12px rgba(34, 211, 238, 0.6);
     }
 
     input[type=range] {
       -webkit-appearance: none;
-      background: #11222b;
+      background: #10212c;
       height: 6px;
       border-radius: 3px;
-      border: 1px solid #193442;
+      border: 1px solid #173140;
     }
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
@@ -66,88 +66,85 @@
       background: #22d3ee;
       box-shadow: 0 0 10px #06b6d4;
       cursor: pointer;
-      border: 2px solid #081116;
+      border: 2px solid #070f14;
     }
   </style>
 </head>
 <body class="bg-studio-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-cyan-500 selection:text-black">
 
-  <!-- Top Navigation Bar -->
-  <header class="border-b border-studio-800 bg-studio-900/80 backdrop-blur-md sticky top-0 z-50 px-4 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+  <!-- Header -->
+  <header class="border-b border-studio-800 bg-studio-900/90 backdrop-blur-md sticky top-0 z-50 px-4 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
     <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-400 flex items-center justify-center shadow-lg shadow-cyan-500/20 text-black font-black text-xl">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 via-teal-500 to-cyan-300 flex items-center justify-center shadow-lg shadow-cyan-500/25 text-black font-black text-xl">
         ∿
       </div>
       <div>
         <div class="flex items-center gap-2">
           <span class="font-extrabold text-base tracking-wider uppercase bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400">
-            Acoustic Studio Radar
+            Acoustic Studio Radar 3D Pro
           </span>
-          <span class="px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 rounded-full">
-            3D Pro Suite
+          <span class="px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 rounded-full font-bold">
+            Interactive Drag &amp; Drop
           </span>
         </div>
-        <p class="text-xs text-slate-400">Zero-Hallucination Physics Simulator for Room Modes, Sweet Spot &amp; SBIR</p>
+        <p class="text-xs text-slate-400">Realistic 3D Studio Acoustics: Drag Monitors &amp; Sweet Spot • Real-Time Physics &amp; SBIR</p>
       </div>
     </div>
 
-    <!-- Quick Room Presets -->
+    <!-- Quick Presets -->
     <div class="flex items-center gap-2 text-xs">
-      <span class="text-slate-500 hidden sm:inline">Presets:</span>
-      <button onclick="applyPreset(2.8, 2.2, 2.4)" class="px-3 py-1.5 rounded-lg border border-studio-700 bg-studio-850 hover:border-cyan-500 hover:text-cyan-400 transition">Vocal Booth</button>
-      <button onclick="applyPreset(4.8, 3.5, 2.6)" class="px-3 py-1.5 rounded-lg border border-cyan-500/50 bg-cyan-950/40 text-cyan-300 shadow-sm transition">Home Studio (4.8m)</button>
-      <button onclick="applyPreset(6.2, 4.4, 2.9)" class="px-3 py-1.5 rounded-lg border border-studio-700 bg-studio-850 hover:border-cyan-500 hover:text-cyan-400 transition">Mastering Room</button>
+      <span class="text-slate-500 hidden sm:inline">Room Preset:</span>
+      <button onclick="applyPreset(3.2, 2.4, 2.5)" class="px-3 py-1.5 rounded-lg border border-studio-700 bg-studio-850 hover:border-cyan-500 hover:text-cyan-400 transition">Vocal Booth</button>
+      <button onclick="applyPreset(4.8, 3.5, 2.6)" class="px-3 py-1.5 rounded-lg border border-cyan-500/60 bg-cyan-950/40 text-cyan-300 shadow-sm transition">Home Studio (4.8m)</button>
+      <button onclick="applyPreset(6.4, 4.6, 2.9)" class="px-3 py-1.5 rounded-lg border border-studio-700 bg-studio-850 hover:border-cyan-500 hover:text-cyan-400 transition">Mastering Suite</button>
     </div>
 
-    <!-- Quick Action / GitHub -->
-    <div class="flex items-center gap-3">
+    <!-- Action Buttons -->
+    <div class="flex items-center gap-2.5">
       <button onclick="copyMcpConfig()" class="px-3 py-1.5 text-xs font-mono rounded-lg border border-studio-700 bg-studio-800 hover:bg-studio-700 flex items-center gap-1.5 transition">
         <span>📋</span> Copy MCP Command
       </button>
-      <a href="https://github.com/tudadada/acoustic-room-mode-radar" target="_blank" class="px-3 py-1.5 text-xs rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold shadow-md shadow-cyan-500/20 transition flex items-center gap-1">
+      <a href="https://github.com/tudadada/acoustic-room-mode-radar" target="_blank" class="px-3.5 py-1.5 text-xs rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-bold shadow-md shadow-cyan-500/25 transition">
         ★ GitHub Repo
       </a>
     </div>
   </header>
 
-  <!-- Main Content Layout -->
-  <main class="flex-1 max-w-[1700px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 xl:grid-cols-12 gap-6">
+  <!-- Main View -->
+  <main class="flex-1 max-w-[1720px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 xl:grid-cols-12 gap-6">
 
-    <!-- LEFT PANEL: Console Controls (4 Cols) -->
+    <!-- LEFT SIDEBAR: Controls & Meters (4 Cols) -->
     <div class="xl:col-span-4 space-y-5">
 
-      <!-- Section: Room Dimensions -->
+      <!-- Room Dimensions Card -->
       <div class="bg-studio-900 border border-studio-800 rounded-2xl p-5 shadow-xl space-y-4">
         <div class="flex items-center justify-between border-b border-studio-800 pb-3">
           <div class="flex items-center gap-2">
-            <span class="text-cyan-400">📏</span>
-            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-300">Room Dimensions (Meters)</h2>
+            <span class="text-cyan-400">📐</span>
+            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-300">Room Dimensions</h2>
           </div>
-          <span id="badgeVolume" class="font-mono text-xs px-2.5 py-0.5 rounded-md bg-studio-950 border border-studio-700 text-cyan-400">43.7 m³</span>
+          <span id="badgeVolume" class="font-mono text-xs px-2.5 py-0.5 rounded-md bg-studio-950 border border-studio-700 text-cyan-400 font-bold">43.7 m³</span>
         </div>
 
-        <!-- Length (L) -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Length (Listening Axis - L)</span>
+            <span class="text-slate-400">Length (L - Listening Axis)</span>
             <span id="valLength" class="font-mono font-bold text-cyan-400">4.80 m</span>
           </div>
           <input type="range" id="inputL" min="2.0" max="10.0" step="0.1" value="4.8" class="w-full">
         </div>
 
-        <!-- Width (W) -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Width (Lateral Axis - W)</span>
+            <span class="text-slate-400">Width (W - Lateral Wall)</span>
             <span id="valWidth" class="font-mono font-bold text-cyan-400">3.50 m</span>
           </div>
           <input type="range" id="inputW" min="2.0" max="8.0" step="0.1" value="3.5" class="w-full">
         </div>
 
-        <!-- Height (H) -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Height (Ceiling - H)</span>
+            <span class="text-slate-400">Height (H - Ceiling)</span>
             <span id="valHeight" class="font-mono font-bold text-cyan-400">2.60 m</span>
           </div>
           <input type="range" id="inputH" min="2.0" max="4.5" step="0.05" value="2.6" class="w-full">
@@ -155,27 +152,34 @@
 
         <!-- Bolt Area Compliance Badge -->
         <div id="boxBolt" class="p-3 rounded-xl bg-studio-950 border border-studio-800 flex items-center justify-between text-xs">
-          <span class="text-slate-400">Proportions (H : W : L):</span>
+          <span class="text-slate-400">Ratio (H : W : L):</span>
           <span id="valBoltRatio" class="font-mono font-bold text-emerald-400">1.00 : 1.35 : 1.85 (Bolt Area ✅)</span>
         </div>
       </div>
 
-      <!-- Section: Sweet Spot & Monitor Geometry -->
+      <!-- Speaker & Chair Position Card -->
       <div class="bg-studio-900 border border-studio-800 rounded-2xl p-5 shadow-xl space-y-4">
         <div class="flex items-center justify-between border-b border-studio-800 pb-3">
           <div class="flex items-center gap-2">
-            <span class="text-studio-gold">🎯</span>
-            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-300">Speaker &amp; Sweet Spot Geometry</h2>
+            <span class="text-studio-gold">🎮</span>
+            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-300">Monitors &amp; Sweet Spot</h2>
           </div>
-          <button onclick="resetTo38Rule()" class="text-[11px] font-medium px-2.5 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 transition">
-            Auto 38% Rule
-          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="resetTo38Rule()" class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 transition">
+              Apply 38% Rule
+            </button>
+          </div>
+        </div>
+
+        <div class="p-2.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs flex items-center gap-2">
+          <span>💡</span>
+          <span><strong>Mẹo:</strong> Bạn có thể dùng chuột <strong>bấm trực tiếp vào Loa hoặc Ghế</strong> trong khung nhìn 3D để kéo di chuyển tự do!</span>
         </div>
 
         <!-- Listener Y Distance -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Listening Chair Distance from Front Wall</span>
+            <span class="text-slate-400">Chair Distance from Front Wall</span>
             <span id="valListenerY" class="font-mono font-bold text-cyan-400">1.83 m (38.2%)</span>
           </div>
           <input type="range" id="inputListenerY" min="0.5" max="8.0" step="0.05" value="1.83" class="w-full">
@@ -184,47 +188,96 @@
         <!-- Speaker Base Spread -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Monitor Equilateral Base Spread</span>
+            <span class="text-slate-400">Speaker Triangle Spread</span>
             <span id="valSpeakerSpread" class="font-mono font-bold text-cyan-400">1.33 m</span>
           </div>
-          <input type="range" id="inputSpeakerSpread" min="0.8" max="3.0" step="0.05" value="1.33" class="w-full">
+          <input type="range" id="inputSpeakerSpread" min="0.8" max="3.5" step="0.05" value="1.33" class="w-full">
         </div>
 
         <!-- Speaker Distance to Front Wall -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <span class="text-slate-400">Monitor Front Wall Distance (SBIR)</span>
+            <span class="text-slate-400">Speaker Distance to Front Wall</span>
             <span id="valSpeakerWall" class="font-mono font-bold text-cyan-400">0.68 m</span>
           </div>
-          <input type="range" id="inputSpeakerWall" min="0.1" max="2.0" step="0.05" value="0.68" class="w-full">
+          <input type="range" id="inputSpeakerWall" min="0.1" max="2.5" step="0.05" value="0.68" class="w-full">
         </div>
 
-        <!-- SBIR Quarter-Wave Risk Assessment Box -->
+        <!-- Equilateral Triangle Verification Badge -->
+        <div id="boxTriangle" class="p-3 rounded-xl bg-studio-950 border border-studio-800 space-y-1.5 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-400">Stereo Triangle (60° Rule):</span>
+            <span id="badgeTriangleMatch" class="font-mono font-bold text-emerald-400">🎯 Perfect 60.0° Match</span>
+          </div>
+          <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+            <span>Base (L-R): <strong id="valTriBase" class="text-cyan-400">1.33m</strong></span>
+            <span>Sides (L-Ear): <strong id="valTriLeg" class="text-cyan-400">1.33m</strong></span>
+            <span>Apex: <strong id="valTriAngle" class="text-cyan-400">60.0°</strong></span>
+          </div>
+        </div>
+
+        <!-- Speaker Stand Height, Toe-in & Tilt -->
+        <div class="grid grid-cols-3 gap-2.5 pt-1">
+          <div class="space-y-1">
+            <div class="flex justify-between text-[11px]">
+              <span class="text-slate-400">Height</span>
+              <span id="valStandHeight" class="font-mono text-cyan-400 font-bold">1.15 m</span>
+            </div>
+            <input type="range" id="inputStandH" min="0.8" max="1.5" step="0.05" value="1.15" class="w-full">
+          </div>
+          <div class="space-y-1">
+            <div class="flex justify-between text-[11px]">
+              <span class="text-slate-400">Toe-In</span>
+              <span id="valToeIn" class="font-mono text-cyan-400 font-bold">30° In</span>
+            </div>
+            <input type="range" id="inputToeIn" min="0" max="45" step="1" value="30" class="w-full">
+          </div>
+          <div class="space-y-1">
+            <div class="flex justify-between text-[11px]">
+              <span class="text-slate-400">Pitch Tilt</span>
+              <span id="valTilt" class="font-mono text-cyan-400 font-bold">0° Flat</span>
+            </div>
+            <input type="range" id="inputTilt" min="-15" max="15" step="1" value="0" class="w-full">
+          </div>
+        </div>
+
+        <!-- Auto Aim Laser Button -->
+        <div class="flex items-center justify-between text-xs pt-0.5">
+          <span class="text-slate-400 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+            Laser Guide &amp; Alignment:
+          </span>
+          <button id="btnAutoAim" onclick="toggleAutoAim()" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[11px] font-bold hover:bg-cyan-500/30 transition">
+            Auto-Aim to Ears: ON
+          </button>
+        </div>
+
+        <!-- SBIR Alert Box -->
         <div id="boxSbir" class="p-3.5 rounded-xl border text-xs space-y-1 bg-amber-500/10 border-amber-500/30 text-amber-300">
           <div class="flex items-center justify-between font-bold">
-            <span>SBIR Front Notch: <span id="valSbirFreq">126.2 Hz</span></span>
+            <span>SBIR Front Wall Cancellation: <span id="valSbirFreq">126.2 Hz</span></span>
             <span class="px-2 py-0.5 rounded text-[10px] bg-amber-500/20 uppercase font-mono">Critical Notch</span>
           </div>
           <p id="descSbir" class="text-slate-300 text-[11px] leading-relaxed">
-            Quarter-wavelength cancellation lands in the kick/punch bass band. Pull speakers > 0.9m or push < 0.2m with rear boundary trap.
+            Quarter-wavelength reflection null lands in punchy kick/bass range. Pull speakers > 0.9m or push < 0.2m with thick bass trap.
           </p>
         </div>
       </div>
 
-      <!-- Section: Reverb Decay & Treatment -->
+      <!-- Acoustic Decay (RT60) -->
       <div class="bg-studio-900 border border-studio-800 rounded-2xl p-5 shadow-xl space-y-4">
         <div class="flex items-center justify-between border-b border-studio-800 pb-3">
           <div class="flex items-center gap-2">
             <span class="text-emerald-400">🎚️</span>
-            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-300">Acoustic Decay (RT60) &amp; Panels</h2>
+            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-300">Reverb Time (RT60) &amp; Panels</h2>
           </div>
-          <span class="text-[11px] text-slate-400">Norris-Eyring Model</span>
+          <span class="text-[11px] text-slate-400 font-mono">Norris-Eyring Model</span>
         </div>
 
         <div class="grid grid-cols-2 gap-3 text-xs">
           <div>
-            <label class="text-slate-400 block mb-1.5">Target Destination</label>
-            <select id="selTarget" onchange="recalculate()" class="w-full bg-studio-950 border border-studio-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500">
+            <label class="text-slate-400 block mb-1.5">Target Use</label>
+            <select id="selTarget" onchange="recalculate()" class="w-full bg-studio-950 border border-studio-700 rounded-lg p-2 text-slate-200">
               <option value="podcast">Podcast / Vocal (0.28s)</option>
               <option value="mixing" selected>Studio Mixing (0.32s)</option>
               <option value="theater">Home Theater (0.40s)</option>
@@ -233,16 +286,16 @@
           </div>
           <div>
             <label class="text-slate-400 block mb-1.5">Floor Material</label>
-            <select id="selFloor" onchange="recalculate()" class="w-full bg-studio-950 border border-studio-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500">
-              <option value="hardwood" selected>Hardwood / Parquet</option>
+            <select id="selFloor" onchange="recalculate()" class="w-full bg-studio-950 border border-studio-700 rounded-lg p-2 text-slate-200">
+              <option value="hardwood" selected>Hardwood Parquet</option>
               <option value="tile">Ceramic Tile</option>
               <option value="carpet_commercial">Commercial Carpet</option>
-              <option value="carpet_heavy">Thick Carpet &amp; Pad</option>
+              <option value="carpet_heavy">Thick Carpet &amp; Underlay</option>
             </select>
           </div>
         </div>
 
-        <!-- RT60 Meter Card -->
+        <!-- Meter -->
         <div class="p-3.5 rounded-xl bg-studio-950 border border-studio-800 flex items-center justify-between">
           <div>
             <span class="text-[11px] text-slate-400 block">Current Mid RT60:</span>
@@ -257,55 +310,65 @@
 
     </div>
 
-    <!-- RIGHT PANEL: 3D Studio Canvas & RTA Frequency Analyzer (8 Cols) -->
+    <!-- RIGHT PANEL: Realistic 3D Studio & RTA Spectrum (8 Cols) -->
     <div class="xl:col-span-8 space-y-6">
 
-      <!-- 3D Interactive WebGL Viewport -->
+      <!-- 3D Realistic Viewport -->
       <div class="bg-studio-900 border border-studio-800 rounded-2xl p-5 shadow-2xl space-y-3 relative overflow-hidden">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-2.5">
             <h2 class="text-xs font-bold uppercase tracking-widest text-slate-200 flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
-              3D Interactive Studio Environment
+              Realistic 3D Studio Simulator
             </h2>
-            <span class="text-[11px] text-slate-400">(Drag to Rotate • Scroll to Zoom • Right-Click Pan)</span>
+            <span class="text-[11px] text-slate-400 font-mono">(Hover to Select • Drag to Move Objects • Rotate View)</span>
           </div>
 
-          <!-- Camera Preset Switchers -->
+          <!-- 3D Display Controls -->
           <div class="flex items-center gap-1.5 text-xs bg-studio-950 p-1 rounded-lg border border-studio-800">
             <button onclick="setCameraView('perspective')" class="px-2.5 py-1 rounded hover:bg-studio-800 text-slate-300 transition">Perspective</button>
             <button onclick="setCameraView('top')" class="px-2.5 py-1 rounded hover:bg-studio-800 text-slate-300 transition">Top View</button>
             <button onclick="setCameraView('sweetspot')" class="px-2.5 py-1 rounded hover:bg-studio-800 text-cyan-400 transition">Sweet Spot</button>
+            <button onclick="toggleHeatmap()" id="btnHeatmap" class="px-2.5 py-1 rounded bg-studio-800 hover:bg-studio-700 text-amber-300 border border-amber-500/30">Heatmap: OFF</button>
             <button onclick="toggleSoundWaves()" id="btnWaveToggle" class="px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">Waves: ON</button>
+            <button onclick="toggleMirrors()" id="btnMirrorToggle" class="px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">Mirrors: ON</button>
           </div>
         </div>
 
         <!-- Three.js Canvas Container -->
-        <div id="threeContainer" class="w-full h-[460px] rounded-xl overflow-hidden bg-black relative border border-studio-800 shadow-inner">
-          <!-- WebGL will attach here -->
-          <div class="absolute bottom-3 left-3 pointer-events-none text-[10px] font-mono text-cyan-400/80 bg-studio-950/80 px-2 py-1 rounded border border-cyan-500/20">
-            Render: WebGL Engine • True 1:1 Scale
+        <div id="threeContainer" class="w-full h-[520px] rounded-xl overflow-hidden bg-black relative border border-studio-800 shadow-inner cursor-grab active:cursor-grabbing">
+          <!-- WebGL Canvas attached here -->
+          
+          <!-- Dynamic Floating HUD when dragging object -->
+          <div id="dragHud" class="absolute top-3 right-3 pointer-events-none text-xs font-mono text-cyan-300 bg-studio-950/90 backdrop-blur-md px-3 py-2 rounded-xl border border-cyan-500/30 shadow-lg hidden">
+            <span id="dragHudText">Dragging: Left Monitor</span>
+          </div>
+
+          <div class="absolute bottom-3 left-3 pointer-events-none text-[10px] font-mono text-cyan-400/80 bg-studio-950/85 px-2.5 py-1 rounded border border-cyan-500/20 backdrop-blur-sm">
+            Realistic PBR Shaders • Soft Studio Lighting • 60 FPS
           </div>
         </div>
 
-        <!-- 3D Legend & Geometry Indicators -->
+        <!-- 3D Studio Legend -->
         <div class="flex flex-wrap items-center justify-between text-xs text-slate-400 px-1 pt-1 gap-4">
           <div class="flex items-center gap-4">
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-cyan-400 inline-block shadow-sm shadow-cyan-400"></span> Nearfield Monitors</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400 inline-block shadow-sm shadow-amber-400"></span> Sweet Spot (38%)</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-red-500/30 border border-red-500 inline-block"></span> 50% Axial Null Plane</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-cyan-400 inline-block shadow-sm shadow-cyan-400"></span> Studio Monitors (Draggable)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400 inline-block shadow-sm shadow-amber-400"></span> Producer Chair (Draggable)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-red-500/30 border border-red-500 inline-block"></span> 50% Bass Null Plane</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 border-2 border-dashed border-amber-400 inline-block"></span> Mirror Reflection Rays</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-slate-700 border border-cyan-500/50 inline-block"></span> Acoustic Panels &amp; Bass Traps</span>
           </div>
           <div class="font-mono text-slate-500">
-            Front Wall: Z = 0 | Back Wall: Z = <span id="labelMaxZ">4.80m</span>
+            Z: Front Wall (0.0m) ➔ Back Wall (<span id="labelMaxZ">4.80m</span>)
           </div>
         </div>
       </div>
 
-      <!-- Real-Time Frequency Modal Spectrum (RTA) -->
+      <!-- Real-Time Modal Spectrum Analyzer (RTA) -->
       <div class="bg-studio-900 border border-studio-800 rounded-2xl p-5 shadow-2xl space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-200">Room Modes Standing Wave Spectrum (20 Hz - 250 Hz)</h2>
+            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-200">Standing Wave Room Modes Spectrum (20 Hz - 250 Hz)</h2>
             <p class="text-xs text-slate-400 mt-0.5">Axial modes (0 dB, red) cause severe boom. Tangential (-3 dB, cyan) &amp; Oblique (-6 dB, purple) modes analyzed.</p>
           </div>
           <div class="text-right">
@@ -314,12 +377,11 @@
           </div>
         </div>
 
-        <!-- Chart.js Canvas -->
         <div class="h-44 w-full relative">
           <canvas id="rtaChart"></canvas>
         </div>
 
-        <!-- Stats Bar -->
+        <!-- Quick Acoustic Metrics -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-1">
           <div class="p-3 rounded-xl bg-studio-950 border border-studio-800">
             <span class="text-[11px] text-slate-400 block">Lowest Resonance (fmin)</span>
@@ -347,7 +409,7 @@
   <!-- Footer -->
   <footer class="border-t border-studio-800 bg-studio-900/60 py-4 px-6 text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-3">
     <div>
-      Acoustic Studio Radar • Pure Open-Source Physics Engine • Standard ISO 3382-1 &amp; Rayleigh Theory
+      Acoustic Studio Radar 3D • Pure Open-Source Physics Engine • Standard ISO 3382-1 &amp; Rayleigh Theory
     </div>
     <div class="flex items-center gap-4">
       <a href="https://github.com/tudadada/acoustic-room-mode-radar" target="_blank" class="hover:text-cyan-400 transition">GitHub</a>
@@ -357,9 +419,9 @@
     </div>
   </footer>
 
-  <!-- Application Logic -->
+  <!-- SCRIPT: THREE.JS STUDIO SIMULATION & DRAG-AND-DROP LOGIC -->
   <script>
-    // State Object
+    // State
     const state = {
       L: 4.80,
       W: 3.50,
@@ -367,21 +429,30 @@
       listenerY: 1.83,
       speakerSpread: 1.33,
       speakerWall: 0.68,
+      standHeight: 1.15,
+      toeInDeg: 30,
+      verticalTiltDeg: 0,
+      autoAim: true,
       targetPreset: 'mixing',
       floorMaterial: 'hardwood',
       c: 343.4,
-      showWaves: true
+      showWaves: true,
+      showHeatmap: false,
+      showMirrors: true
     };
 
-    // DOM References
+    // UI Bindings
     const inputL = document.getElementById('inputL');
     const inputW = document.getElementById('inputW');
     const inputH = document.getElementById('inputH');
     const inputListenerY = document.getElementById('inputListenerY');
     const inputSpeakerSpread = document.getElementById('inputSpeakerSpread');
     const inputSpeakerWall = document.getElementById('inputSpeakerWall');
+    const inputStandH = document.getElementById('inputStandH');
+    const inputToeIn = document.getElementById('inputToeIn');
+    const inputTilt = document.getElementById('inputTilt');
 
-    // Attach Listeners
+    // Input Events
     inputL.addEventListener('input', (e) => {
       state.L = parseFloat(e.target.value);
       inputListenerY.max = (state.L * 0.85).toFixed(2);
@@ -408,6 +479,53 @@
       state.speakerWall = parseFloat(e.target.value);
       recalculate();
     });
+    inputStandH.addEventListener('input', (e) => {
+      state.standHeight = parseFloat(e.target.value);
+      document.getElementById('valStandHeight').innerText = `${state.standHeight.toFixed(2)} m`;
+      recalculate();
+    });
+    inputToeIn.addEventListener('input', (e) => {
+      state.toeInDeg = parseInt(e.target.value);
+      document.getElementById('valToeIn').innerText = `${state.toeInDeg}° In`;
+      if (state.autoAim) {
+        state.autoAim = false;
+        updateAutoAimBtn();
+      }
+      recalculate();
+    });
+    inputTilt.addEventListener('input', (e) => {
+      state.verticalTiltDeg = parseInt(e.target.value);
+      document.getElementById('valTilt').innerText = `${state.verticalTiltDeg > 0 ? '+' : ''}${state.verticalTiltDeg}°`;
+      if (state.autoAim) {
+        state.autoAim = false;
+        updateAutoAimBtn();
+      }
+      recalculate();
+    });
+
+    function toggleAutoAim() {
+      state.autoAim = !state.autoAim;
+      updateAutoAimBtn();
+      recalculate();
+    }
+
+    function updateAutoAimBtn() {
+      const btn = document.getElementById('btnAutoAim');
+      btn.innerText = `Auto-Aim to Ears: ${state.autoAim ? 'ON' : 'OFF'}`;
+      btn.className = state.autoAim
+        ? "px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[11px] font-bold hover:bg-cyan-500/30 transition"
+        : "px-2.5 py-1 rounded-lg bg-studio-800 text-slate-400 border border-studio-700 text-[11px] font-bold hover:bg-studio-700 transition";
+    }
+
+    function toggleMirrors() {
+      state.showMirrors = !state.showMirrors;
+      const btn = document.getElementById('btnMirrorToggle');
+      btn.innerText = `Mirrors: ${state.showMirrors ? 'ON' : 'OFF'}`;
+      btn.className = state.showMirrors
+        ? "px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+        : "px-2.5 py-1 rounded bg-studio-800 hover:bg-studio-700 text-slate-400 border border-studio-700";
+      recalculate();
+    }
 
     function applyPreset(l, w, h) {
       state.L = l;
@@ -436,11 +554,21 @@
     }
 
     // ==============================================================
-    // THREE.JS 3D SCENE SETUP
+    // THREE.JS REALISTIC STUDIO ENGINE
     // ==============================================================
     let scene, camera, renderer, controls;
-    let roomWireframe, roomFloor, nullPlane, sweetSpotMesh, leftSpeakerGroup, rightSpeakerGroup;
+    let roomGroup, studioFurnitureGroup, speakersGroup, chairGroup, treatmentGroup, heatmapGroup, wavesGroup, reflectionsGroup;
+    let leftSpeakerMesh, rightSpeakerMesh, chairMesh;
     let soundWaveRings = [];
+
+    // Interactive Dragging State
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let dragPlane;
+    let selectedObject = null;
+    let isDragging = false;
+    const dragHud = document.getElementById('dragHud');
+    const dragHudText = document.getElementById('dragHudText');
 
     function init3D() {
       const container = document.getElementById('threeContainer');
@@ -448,75 +576,119 @@
       const height = container.clientHeight;
 
       scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x060b0e);
-      scene.fog = new THREE.FogExp2(0x060b0e, 0.04);
+      scene.background = new THREE.Color(0x040709);
+      scene.fog = new THREE.FogExp2(0x040709, 0.035);
 
       camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-      camera.position.set(0, 6, 8);
+      camera.position.set(0, 5.5, 7.5);
 
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
       renderer.setSize(width, height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       container.appendChild(renderer.domElement);
 
       controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
-      controls.maxPolarAngle = Math.PI / 2 + 0.05; // Don't go below floor
+      controls.maxPolarAngle = Math.PI / 2 + 0.02;
 
-      // Ambient & Directional Lights
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      // Lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
       scene.add(ambientLight);
 
-      const dirLight = new THREE.DirectionalLight(0x06b6d4, 1.2);
-      dirLight.position.set(5, 10, 5);
-      scene.add(dirLight);
+      // Studio Ceiling Keylight
+      const spotLight = new THREE.SpotLight(0xfff7ed, 1.8);
+      spotLight.position.set(0, 7, 0);
+      spotLight.angle = Math.PI / 3;
+      spotLight.penumbra = 0.5;
+      spotLight.castShadow = true;
+      spotLight.shadow.mapSize.width = 1024;
+      spotLight.shadow.mapSize.height = 1024;
+      scene.add(spotLight);
 
-      const pointLight = new THREE.PointLight(0x22d3ee, 1, 15);
-      pointLight.position.set(0, 3, 0);
-      scene.add(pointLight);
+      // Cyan Accent Glow from desk back
+      const cyanRim = new THREE.DirectionalLight(0x06b6d4, 0.8);
+      cyanRim.position.set(0, 2, -4);
+      scene.add(cyanRim);
 
-      build3DRoom();
+      // Invisible drag floor plane
+      const dragPlaneGeo = new THREE.PlaneGeometry(50, 50);
+      const dragPlaneMat = new THREE.MeshBasicMaterial({ visible: false });
+      dragPlane = new THREE.Mesh(dragPlaneGeo, dragPlaneMat);
+      dragPlane.rotation.x = -Math.PI / 2;
+      scene.add(dragPlane);
+
+      // Create Groups
+      roomGroup = new THREE.Group();
+      studioFurnitureGroup = new THREE.Group();
+      speakersGroup = new THREE.Group();
+      treatmentGroup = new THREE.Group();
+      heatmapGroup = new THREE.Group();
+      wavesGroup = new THREE.Group();
+      reflectionsGroup = new THREE.Group();
+
+      scene.add(roomGroup);
+      scene.add(studioFurnitureGroup);
+      scene.add(speakersGroup);
+      scene.add(treatmentGroup);
+      scene.add(heatmapGroup);
+      scene.add(wavesGroup);
+      scene.add(reflectionsGroup);
+
+      // Setup Drag and Drop Listeners
+      setupDragEvents(container);
+
+      // Build Initial Scene
+      buildFullStudio();
 
       window.addEventListener('resize', onWindowResize);
       animate3D();
     }
 
-    function build3DRoom() {
-      // Clear previous room objects
-      if (roomWireframe) scene.remove(roomWireframe);
-      if (roomFloor) scene.remove(roomFloor);
-      if (nullPlane) scene.remove(nullPlane);
-      if (sweetSpotMesh) scene.remove(sweetSpotMesh);
-      if (leftSpeakerGroup) scene.remove(leftSpeakerGroup);
-      if (rightSpeakerGroup) scene.remove(rightSpeakerGroup);
-      soundWaveRings.forEach(r => scene.remove(r));
+    // ==============================================================
+    // PROCEDURAL STUDIO MODELS
+    // ==============================================================
+    function buildFullStudio() {
+      // Clear previous
+      while (roomGroup.children.length > 0) roomGroup.remove(roomGroup.children[0]);
+      while (studioFurnitureGroup.children.length > 0) studioFurnitureGroup.remove(studioFurnitureGroup.children[0]);
+      while (speakersGroup.children.length > 0) speakersGroup.remove(speakersGroup.children[0]);
+      while (treatmentGroup.children.length > 0) treatmentGroup.remove(treatmentGroup.children[0]);
+      while (heatmapGroup.children.length > 0) heatmapGroup.remove(heatmapGroup.children[0]);
+      while (wavesGroup.children.length > 0) wavesGroup.remove(wavesGroup.children[0]);
+      while (reflectionsGroup.children.length > 0) reflectionsGroup.remove(reflectionsGroup.children[0]);
       soundWaveRings = [];
 
       const W = state.W;
       const H = state.H;
       const L = state.L;
 
-      // 1. Transparent Room Box & Neon Wireframe
-      const boxGeo = new THREE.BoxGeometry(W, H, L);
-      const edges = new THREE.EdgesGeometry(boxGeo);
-      roomWireframe = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x06b6d4, linewidth: 2 }));
-      roomWireframe.position.set(0, H / 2, 0);
-      scene.add(roomWireframe);
+      // 1. Room Shell & Parquet Hardwood Floor
+      const floorMat = new THREE.MeshStandardMaterial({
+        color: 0x1a1512,
+        roughness: 0.35,
+        metalness: 0.1
+      });
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(W, L), floorMat);
+      floor.rotation.x = -Math.PI / 2;
+      floor.receiveShadow = true;
+      roomGroup.add(floor);
 
-      // Floor Grid
-      const floorGeo = new THREE.PlaneGeometry(W, L);
-      const floorMat = new THREE.MeshBasicMaterial({ color: 0x08151c, side: THREE.DoubleSide });
-      roomFloor = new THREE.Mesh(floorGeo, floorMat);
-      roomFloor.rotation.x = Math.PI / 2;
-      roomFloor.position.set(0, 0, 0);
-      scene.add(roomFloor);
+      // Subtle Grid Overlay
+      const grid = new THREE.GridHelper(Math.max(W, L), 20, 0x173140, 0x0a161f);
+      grid.position.y = 0.005;
+      roomGroup.add(grid);
 
-      const gridHelper = new THREE.GridHelper(Math.max(W, L), 20, 0x193442, 0x0f222b);
-      gridHelper.position.set(0, 0.01, 0);
-      scene.add(gridHelper);
+      // Transparent Glass Walls with Neon Edges
+      const roomBox = new THREE.BoxGeometry(W, H, L);
+      const edges = new THREE.EdgesGeometry(roomBox);
+      const wireframe = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x06b6d4, linewidth: 2 }));
+      wireframe.position.y = H / 2;
+      roomGroup.add(wireframe);
 
-      // 2. 50% Length Null Zone Plane (Red Transparent)
+      // 50% Length Null Zone Plane (Red Transparent)
       const nullGeo = new THREE.PlaneGeometry(W, H);
       const nullMat = new THREE.MeshBasicMaterial({
         color: 0xef4444,
@@ -524,106 +696,502 @@
         opacity: 0.15,
         side: THREE.DoubleSide
       });
-      nullPlane = new THREE.Mesh(nullGeo, nullMat);
-      nullPlane.position.set(0, H / 2, 0); // Center is 50% length
-      scene.add(nullPlane);
+      const nullPlane = new THREE.Mesh(nullGeo, nullMat);
+      nullPlane.position.set(0, H / 2, 0); // 0 is center (L/2)
+      roomGroup.add(nullPlane);
 
-      // 3. Sweet Spot Chair (Amber Glowing Sphere + Column)
-      const chairGroup = new THREE.Group();
-      const headGeo = new THREE.SphereGeometry(0.18, 16, 16);
-      const headMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xd97706, roughness: 0.3 });
-      const head = new THREE.Mesh(headGeo, headMat);
-      head.position.y = 1.15; // Ear level
-      chairGroup.add(head);
+      // 2. Corner Bass Traps (4 Triangular Prisms in all 4 corners)
+      createCornerBassTrap(-W/2, 0, -L/2, Math.PI / 4, H);
+      createCornerBassTrap(W/2, 0, -L/2, -Math.PI / 4, H);
+      createCornerBassTrap(-W/2, 0, L/2, (3 * Math.PI) / 4, H);
+      createCornerBassTrap(W/2, 0, L/2, -(3 * Math.PI) / 4, H);
 
-      const chairBase = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.15, 0.25, 0.6, 16),
-        new THREE.MeshStandardMaterial({ color: 0x27272a, roughness: 0.8 })
-      );
-      chairBase.position.y = 0.3;
-      chairGroup.add(chairBase);
+      // 3. Mirror Reflection Rays & Wall Panels at Mirror Points
+      const spkZ = -L/2 + state.speakerWall;
+      const chairZ = -L/2 + state.listenerY;
+      const zMirror = createMirrorReflectionRays(W, L, spkZ, chairZ);
 
-      // In 3D: Front wall is -L/2, Rear wall is +L/2
-      const listenerZ = -L / 2 + state.listenerY;
-      chairGroup.position.set(0, 0, listenerZ);
-      sweetSpotMesh = chairGroup;
-      scene.add(sweetSpotMesh);
+      // Acoustic Wall Panels placed at exact mirror points!
+      createWallPanel(-W/2 + 0.05, 1.2, zMirror, 0.1, 1.2, 0.6); // Left wall reflection panel
+      createWallPanel(W/2 - 0.05, 1.2, zMirror, 0.1, 1.2, 0.6);  // Right wall reflection panel
+      createWallPanel(0, 1.4, -L/2 + 0.05, 1.2, 0.8, 0.1); // Front wall behind desk
+      createWallPanel(-W/3, 1.4, L/2 - 0.05, 0.8, 1.2, 0.1); // Rear wall
+      createWallPanel(W/3, 1.4, L/2 - 0.05, 0.8, 1.2, 0.1);
 
-      // 4. Studio Monitors (Left and Right)
-      const speakerZ = -L / 2 + state.speakerWall;
+      // 4. Producer Workstation Desk
+      createProducerDesk(0, 0, -L/2 + state.speakerWall + 0.35);
+
+      // 5. Studio Monitors (Interactive Objects)
       const leftX = -state.speakerSpread / 2;
       const rightX = state.speakerSpread / 2;
+      const toeInRad = (state.toeInDeg * Math.PI) / 180;
+      const tiltRad = (state.verticalTiltDeg * Math.PI) / 180;
 
-      leftSpeakerGroup = createMonitorMesh(leftX, 1.15, speakerZ, 0.45);
-      rightSpeakerGroup = createMonitorMesh(rightX, 1.15, speakerZ, -0.45);
-      scene.add(leftSpeakerGroup);
-      scene.add(rightSpeakerGroup);
+      leftSpeakerMesh = createStudioMonitor(leftX, state.standHeight, spkZ, toeInRad, tiltRad, 'leftSpeaker');
+      rightSpeakerMesh = createStudioMonitor(rightX, state.standHeight, spkZ, -toeInRad, tiltRad, 'rightSpeaker');
+      speakersGroup.add(leftSpeakerMesh);
+      speakersGroup.add(rightSpeakerMesh);
 
-      // 5. Sound Wave Pulses
-      createWaveRings(leftX, 1.15, speakerZ);
-      createWaveRings(rightX, 1.15, speakerZ);
+      // Animated Sound Wave Pulses
+      createWaveRings(leftX, state.standHeight, spkZ);
+      createWaveRings(rightX, state.standHeight, spkZ);
+
+      // 6. Ergonomic Producer Chair (Interactive Object)
+      chairMesh = createErgonomicChair(0, 0, chairZ, 'chair');
+      studioFurnitureGroup.add(chairMesh);
+
+      // 7. Modal Heatmap (If active)
+      if (state.showHeatmap) {
+        buildModalHeatmap(W, L);
+      }
 
       document.getElementById('labelMaxZ').innerText = `${state.L.toFixed(2)}m`;
     }
 
-    function createMonitorMesh(x, y, z, rotationY) {
-      const group = new THREE.Group();
-      const bodyGeo = new THREE.BoxGeometry(0.22, 0.36, 0.26);
-      const bodyMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.4 });
-      const body = new THREE.Mesh(bodyGeo, bodyMat);
-      group.add(body);
+    // Helper: Corner Bass Trap
+    function createCornerBassTrap(x, y, z, rotY, height) {
+      const shape = new THREE.Shape();
+      shape.moveTo(0, 0);
+      shape.lineTo(0.5, 0);
+      shape.lineTo(0, 0.5);
+      shape.closePath();
 
-      // Woofer & Tweeter
-      const wooferGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.02, 16);
-      const wooferMat = new THREE.MeshStandardMaterial({ color: 0x06b6d4, emissive: 0x083344, roughness: 0.2 });
+      const extrudeSettings = { depth: height, bevelEnabled: false };
+      const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+      const mat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.9 });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.rotation.x = -Math.PI / 2;
+      mesh.rotation.z = rotY;
+      mesh.position.set(x, 0, z);
+      treatmentGroup.add(mesh);
+    }
+
+    // Helper: Acoustic Wall Panel
+    function createWallPanel(x, y, z, w, h, d) {
+      const geo = new THREE.BoxGeometry(w, h, d);
+      const mat = new THREE.MeshStandardMaterial({ color: 0x27272a, roughness: 0.85 });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      treatmentGroup.add(mesh);
+    }
+
+    // Helper: Producer Workstation Desk
+    function createProducerDesk(x, y, z) {
+      const group = new THREE.Group();
+
+      // Main Desktop
+      const deskTopGeo = new THREE.BoxGeometry(1.6, 0.05, 0.75);
+      const deskMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3, metalness: 0.2 });
+      const deskTop = new THREE.Mesh(deskTopGeo, deskMat);
+      deskTop.position.set(0, 0.75, 0);
+      deskTop.castShadow = true;
+      deskTop.receiveShadow = true;
+      group.add(deskTop);
+
+      // Top Shelf for Displays
+      const shelfGeo = new THREE.BoxGeometry(1.5, 0.03, 0.28);
+      const shelf = new THREE.Mesh(shelfGeo, deskMat);
+      shelf.position.set(0, 0.92, -0.22);
+      group.add(shelf);
+
+      // Desk Legs (Black Metal)
+      const legGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.75, 16);
+      const legMat = new THREE.MeshStandardMaterial({ color: 0x1f2937, metalness: 0.8 });
+      const leg1 = new THREE.Mesh(legGeo, legMat); leg1.position.set(-0.7, 0.375, -0.3); group.add(leg1);
+      const leg2 = new THREE.Mesh(legGeo, legMat); leg2.position.set(0.7, 0.375, -0.3); group.add(leg2);
+      const leg3 = new THREE.Mesh(legGeo, legMat); leg3.position.set(-0.7, 0.375, 0.3); group.add(leg3);
+      const leg4 = new THREE.Mesh(legGeo, legMat); leg4.position.set(0.7, 0.375, 0.3); group.add(leg4);
+
+      // Ultrawide Curved Computer Display
+      const screenGeo = new THREE.BoxGeometry(0.85, 0.32, 0.03);
+      const screenMat = new THREE.MeshStandardMaterial({
+        color: 0x0284c7,
+        emissive: 0x0369a1,
+        emissiveIntensity: 0.4,
+        roughness: 0.1
+      });
+      const screen = new THREE.Mesh(screenGeo, screenMat);
+      screen.position.set(0, 1.15, -0.22);
+      group.add(screen);
+
+      group.position.set(x, 0, z);
+      studioFurnitureGroup.add(group);
+    }
+
+    // Helper: Calculate & Render First Reflection Rays (Mirror Points)
+    function createMirrorReflectionRays(W, L, spkZ, chairZ) {
+      const spkY = state.standHeight + 0.28;
+      const earY = 1.18;
+      const leftSpkX = -state.speakerSpread / 2;
+      const rightSpkX = state.speakerSpread / 2;
+
+      // Distance from speaker to sidewall vs distance from ear to sidewall
+      const dSpkWall = Math.max(0.1, W / 2 - state.speakerSpread / 2);
+      const dEarWall = W / 2;
+      const fraction = dSpkWall / (dSpkWall + dEarWall);
+      const zMirror = spkZ + (chairZ - spkZ) * fraction;
+      const yMirror = spkY + (earY - spkY) * fraction;
+
+      if (!state.showMirrors) return zMirror;
+
+      const rayMat = new THREE.LineDashedMaterial({
+        color: 0xf59e0b, // Amber reflection ray
+        dashSize: 0.12,
+        gapSize: 0.06,
+        transparent: true,
+        opacity: 0.75
+      });
+
+      // Left reflection ray: Spk -> Left Wall Mirror Point -> Ear
+      const leftPoints = [
+        new THREE.Vector3(leftSpkX, spkY, spkZ),
+        new THREE.Vector3(-W / 2 + 0.02, yMirror, zMirror),
+        new THREE.Vector3(0, earY, chairZ)
+      ];
+      const leftLineGeo = new THREE.BufferGeometry().setFromPoints(leftPoints);
+      const leftLine = new THREE.Line(leftLineGeo, rayMat);
+      leftLine.computeLineDistances();
+      reflectionsGroup.add(leftLine);
+
+      // Right reflection ray: Spk -> Right Wall Mirror Point -> Ear
+      const rightPoints = [
+        new THREE.Vector3(rightSpkX, spkY, spkZ),
+        new THREE.Vector3(W / 2 - 0.02, yMirror, zMirror),
+        new THREE.Vector3(0, earY, chairZ)
+      ];
+      const rightLineGeo = new THREE.BufferGeometry().setFromPoints(rightPoints);
+      const rightLine = new THREE.Line(rightLineGeo, rayMat);
+      rightLine.computeLineDistances();
+      reflectionsGroup.add(rightLine);
+
+      // Glowing reflection target spots on wall
+      const dotGeo = new THREE.CircleGeometry(0.09, 16);
+      const dotMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, side: THREE.DoubleSide });
+      
+      const leftDot = new THREE.Mesh(dotGeo, dotMat);
+      leftDot.position.set(-W / 2 + 0.03, yMirror, zMirror);
+      leftDot.rotation.y = Math.PI / 2;
+      reflectionsGroup.add(leftDot);
+
+      const rightDot = new THREE.Mesh(dotGeo, dotMat);
+      rightDot.position.set(W / 2 - 0.03, yMirror, zMirror);
+      rightDot.rotation.y = -Math.PI / 2;
+      reflectionsGroup.add(rightDot);
+
+      return zMirror;
+    }
+
+    // Helper: Studio Monitor on Stand with PBR styling, Tilt & Toe-In
+    function createStudioMonitor(x, y, z, toeInRad, tiltRad, idName) {
+      const group = new THREE.Group();
+      group.userData = { id: idName, isInteractive: true };
+
+      // 1. Metal Stand Base & Telescopic Pole
+      const baseGeo = new THREE.CylinderGeometry(0.2, 0.22, 0.03, 24);
+      const poleGeo = new THREE.CylinderGeometry(0.03, 0.03, y, 16);
+      const standMat = new THREE.MeshStandardMaterial({ color: 0x18181b, metalness: 0.8, roughness: 0.3 });
+      
+      const standBase = new THREE.Mesh(baseGeo, standMat);
+      standBase.position.y = 0.015;
+      standBase.receiveShadow = true;
+      group.add(standBase);
+
+      const standPole = new THREE.Mesh(poleGeo, standMat);
+      standPole.position.y = y / 2;
+      group.add(standPole);
+
+      // Top Plate & Rubber Isolation Pad
+      const topPlateGeo = new THREE.BoxGeometry(0.26, 0.02, 0.3);
+      const topPlate = new THREE.Mesh(topPlateGeo, standMat);
+      topPlate.position.y = y + 0.01;
+      group.add(topPlate);
+
+      // 2. Pivoting Cabinet Head Group (Toe-In Y + Pitch Tilt X)
+      const headGroup = new THREE.Group();
+      headGroup.position.set(0, y + 0.02, 0);
+      headGroup.rotation.y = toeInRad;
+      headGroup.rotation.x = tiltRad;
+
+      // Monitor Cabinet
+      const cabinetGeo = new THREE.BoxGeometry(0.24, 0.38, 0.28);
+      const cabinetMat = new THREE.MeshStandardMaterial({ color: 0x09090b, roughness: 0.35, metalness: 0.1 });
+      const cabinet = new THREE.Mesh(cabinetGeo, cabinetMat);
+      cabinet.position.y = 0.19;
+      cabinet.castShadow = true;
+      headGroup.add(cabinet);
+
+      // Kevlar Yellow/Cyan Woofer
+      const wooferGeo = new THREE.CylinderGeometry(0.085, 0.085, 0.02, 24);
+      const wooferMat = new THREE.MeshStandardMaterial({
+        color: 0x06b6d4,
+        emissive: 0x083344,
+        roughness: 0.2
+      });
       const woofer = new THREE.Mesh(wooferGeo, wooferMat);
       woofer.rotation.x = Math.PI / 2;
-      woofer.position.set(0, -0.05, 0.13);
-      group.add(woofer);
+      woofer.position.set(0, 0.13, 0.14);
+      headGroup.add(woofer);
 
-      const tweeterGeo = new THREE.CylinderGeometry(0.035, 0.035, 0.02, 16);
-      const tweeterMat = new THREE.MeshStandardMaterial({ color: 0x22d3ee, emissive: 0x22d3ee, roughness: 0.1 });
+      // Tweeter Dome
+      const tweeterGeo = new THREE.SphereGeometry(0.03, 16, 16);
+      const tweeterMat = new THREE.MeshStandardMaterial({
+        color: 0x22d3ee,
+        emissive: 0x06b6d4,
+        emissiveIntensity: 0.6,
+        roughness: 0.1
+      });
       const tweeter = new THREE.Mesh(tweeterGeo, tweeterMat);
-      tweeter.rotation.x = Math.PI / 2;
-      tweeter.position.set(0, 0.09, 0.13);
-      group.add(tweeter);
+      tweeter.position.set(0, 0.28, 0.14);
+      headGroup.add(tweeter);
 
-      group.position.set(x, y, z);
-      group.rotation.y = rotationY;
+      // Blue Power LED
+      const ledGeo = new THREE.SphereGeometry(0.008, 8, 8);
+      const ledMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+      const led = new THREE.Mesh(ledGeo, ledMat);
+      led.position.set(0, 0.02, 0.145);
+      headGroup.add(led);
+
+      // Laser Alignment Guide Ray from Tweeter (4.0m range)
+      const guideRayGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0.28, 0.14),
+        new THREE.Vector3(0, 0.28, 4.0)
+      ]);
+      const guideRayMat = new THREE.LineDashedMaterial({
+        color: 0x22d3ee,
+        dashSize: 0.12,
+        gapSize: 0.06,
+        transparent: true,
+        opacity: 0.65
+      });
+      const guideRay = new THREE.Line(guideRayGeo, guideRayMat);
+      guideRay.computeLineDistances();
+      headGroup.add(guideRay);
+
+      group.add(headGroup);
+      group.position.set(x, 0, z);
       return group;
     }
 
+    // Helper: Ergonomic Chair
+    function createErgonomicChair(x, y, z, idName) {
+      const group = new THREE.Group();
+      group.userData = { id: idName, isInteractive: true };
+
+      // 5-Star Wheeled Base
+      const baseMat = new THREE.MeshStandardMaterial({ color: 0x27272a, metalness: 0.7 });
+      const seatMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.5 }); // Amber seat
+      const backMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.8 });
+
+      const centerPole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.45, 16), baseMat);
+      centerPole.position.y = 0.25;
+      group.add(centerPole);
+
+      // Seat Cushion
+      const seat = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.08, 24), seatMat);
+      seat.position.y = 0.52;
+      seat.castShadow = true;
+      group.add(seat);
+
+      // Backrest
+      const back = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.55, 0.06), backMat);
+      back.position.set(0, 0.85, 0.22);
+      back.rotation.x = -0.15;
+      group.add(back);
+
+      // Headrest (Listener Head Proxy at ear level)
+      const head = new THREE.Mesh(
+        new THREE.SphereGeometry(0.12, 16, 16),
+        new THREE.MeshStandardMaterial({ color: 0xfbbf24, emissive: 0xb45309, emissiveIntensity: 0.3 })
+      );
+      head.position.set(0, 1.18, 0.15); // Ear level
+      group.add(head);
+
+      group.position.set(x, 0, z);
+      return group;
+    }
+
+    // Sound Wave Concentric Rings
     function createWaveRings(x, y, z) {
       for (let i = 0; i < 3; i++) {
-        const ringGeo = new THREE.RingGeometry(0.3 + i * 0.4, 0.35 + i * 0.4, 32);
+        const ringGeo = new THREE.RingGeometry(0.25 + i * 0.35, 0.28 + i * 0.35, 32);
         const ringMat = new THREE.MeshBasicMaterial({
           color: 0x22d3ee,
           transparent: true,
-          opacity: 0.4 - i * 0.12,
+          opacity: 0.45 - i * 0.12,
           side: THREE.DoubleSide
         });
         const ring = new THREE.Mesh(ringGeo, ringMat);
-        ring.position.set(x, y, z + 0.15);
-        ring.rotation.x = Math.PI / 8;
-        ring.userData = { initialScale: 0.5 + i * 0.4, phase: i * 0.33 };
+        ring.position.set(x, y + 0.15, z + 0.1);
+        ring.userData = { phase: i * 0.33 };
         soundWaveRings.push(ring);
-        scene.add(ring);
+        wavesGroup.add(ring);
       }
     }
 
+    // Modal Pressure Heatmap Plane
+    function buildModalHeatmap(W, L) {
+      const segW = 30;
+      const segL = 30;
+      const heatmapGeo = new THREE.PlaneGeometry(W, L, segW, segL);
+      const count = heatmapGeo.attributes.position.count;
+      heatmapGeo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(count * 3), 3));
+
+      const colors = heatmapGeo.attributes.color;
+      for (let i = 0; i < count; i++) {
+        const vx = heatmapGeo.attributes.position.getX(i);
+        const vy = heatmapGeo.attributes.position.getY(i);
+
+        // Compute simulated pressure antinodes (corners are high pressure, 0 center is null)
+        const normX = Math.abs(vx) / (W / 2);
+        const normY = Math.abs(vy) / (L / 2);
+        const pressure = Math.pow(normX * normY, 0.7); // Peaks at 4 corners
+
+        // Color ramp: Blue (low/null) -> Amber -> Red (boom)
+        if (pressure > 0.6) {
+          colors.setXYZ(i, 0.95, 0.2, 0.2); // Red
+        } else if (pressure > 0.3) {
+          colors.setXYZ(i, 0.95, 0.6, 0.1); // Amber
+        } else {
+          colors.setXYZ(i, 0.05, 0.2, 0.4); // Blue/Dark
+        }
+      }
+
+      const heatmapMat = new THREE.MeshBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.35,
+        side: THREE.DoubleSide
+      });
+      const heatmapMesh = new THREE.Mesh(heatmapGeo, heatmapMat);
+      heatmapMesh.rotation.x = -Math.PI / 2;
+      heatmapMesh.position.y = 0.02;
+      heatmapGroup.add(heatmapMesh);
+    }
+
+    // ==============================================================
+    // 3D DRAG & DROP LOGIC (RAYCASTER)
+    // ==============================================================
+    function setupDragEvents(domElement) {
+      domElement.addEventListener('pointerdown', onPointerDown);
+      domElement.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp);
+    }
+
+    function getIntersectedObject(event) {
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const objectsToTest = [leftSpeakerMesh, rightSpeakerMesh, chairMesh].filter(Boolean);
+      const intersects = raycaster.intersectObjects(objectsToTest, true);
+
+      if (intersects.length > 0) {
+        // Find top interactive group
+        let obj = intersects[0].object;
+        while (obj && !obj.userData?.isInteractive) {
+          obj = obj.parent;
+        }
+        return obj;
+      }
+      return null;
+    }
+
+    function onPointerDown(event) {
+      if (event.button !== 0) return; // Only left click
+
+      const target = getIntersectedObject(event);
+      if (target) {
+        selectedObject = target;
+        isDragging = true;
+        controls.enabled = false; // Disable orbit rotate while dragging
+
+        dragHud.classList.remove('hidden');
+        if (target.userData.id === 'leftSpeaker') dragHudText.innerText = "Dragging: Left Monitor";
+        else if (target.userData.id === 'rightSpeaker') dragHudText.innerText = "Dragging: Right Monitor";
+        else if (target.userData.id === 'chair') dragHudText.innerText = "Dragging: Producer Chair (Sweet Spot)";
+      }
+    }
+
+    function onPointerMove(event) {
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      if (!isDragging) {
+        // Hover visual feedback
+        const target = getIntersectedObject(event);
+        renderer.domElement.style.cursor = target ? 'grab' : 'default';
+        return;
+      }
+
+      renderer.domElement.style.cursor = 'grabbing';
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObject(dragPlane);
+
+      if (intersects.length > 0) {
+        const point = intersects[0].point;
+        const halfL = state.L / 2;
+        const halfW = state.W / 2;
+
+        if (selectedObject.userData.id === 'chair') {
+          // Clamp chair inside room bounds
+          const newZ = Math.min(halfL * 0.9, Math.max(-halfL * 0.5, point.z));
+          state.listenerY = Number((newZ + halfL).toFixed(2));
+          inputListenerY.value = state.listenerY;
+          recalculate();
+        } else if (selectedObject.userData.id === 'leftSpeaker' || selectedObject.userData.id === 'rightSpeaker') {
+          // Move speakers with symmetrical spread & wall distance
+          const newZ = Math.min(-halfL * 0.1, Math.max(-halfL * 0.95, point.z));
+          state.speakerWall = Number((newZ + halfL).toFixed(2));
+          inputSpeakerWall.value = state.speakerWall;
+
+          // Symmetrical spread from center
+          const distFromCenter = Math.abs(point.x);
+          state.speakerSpread = Number(Math.min(state.W * 0.85, Math.max(0.8, distFromCenter * 2)).toFixed(2));
+          inputSpeakerSpread.value = state.speakerSpread;
+          recalculate();
+        }
+      }
+    }
+
+    function onPointerUp() {
+      if (isDragging) {
+        isDragging = false;
+        selectedObject = null;
+        controls.enabled = true;
+        dragHud.classList.add('hidden');
+        renderer.domElement.style.cursor = 'default';
+      }
+    }
+
+    // ==============================================================
+    // CAMERA VIEWS & TOGGLES
+    // ==============================================================
     function setCameraView(mode) {
       if (mode === 'top') {
-        camera.position.set(0, Math.max(state.L, state.W) * 1.6, 0.01);
+        camera.position.set(0, Math.max(state.L, state.W) * 1.5, 0.001);
         controls.target.set(0, 0, 0);
       } else if (mode === 'sweetspot') {
-        const listenerZ = -state.L / 2 + state.listenerY;
-        camera.position.set(0, 1.25, listenerZ);
-        controls.target.set(0, 1.15, -state.L / 2 + state.speakerWall);
+        const chairZ = -state.L / 2 + state.listenerY;
+        camera.position.set(0, 1.25, chairZ + 0.15);
+        controls.target.set(0, state.standHeight, -state.L / 2 + state.speakerWall);
       } else {
-        camera.position.set(0, 6, 8);
+        camera.position.set(0, 5.5, 7.5);
         controls.target.set(0, state.H / 2, 0);
       }
       controls.update();
+    }
+
+    function toggleHeatmap() {
+      state.showHeatmap = !state.showHeatmap;
+      const btn = document.getElementById('btnHeatmap');
+      btn.innerText = `Heatmap: ${state.showHeatmap ? 'ON' : 'OFF'}`;
+      btn.className = state.showHeatmap
+        ? "px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40"
+        : "px-2.5 py-1 rounded bg-studio-800 hover:bg-studio-700 text-slate-400 border border-studio-700";
+      recalculate();
     }
 
     function toggleSoundWaves() {
@@ -642,12 +1210,11 @@
     function animate3D() {
       requestAnimationFrame(animate3D);
 
-      // Animate pulsing soundwaves
       if (state.showWaves) {
         soundWaveRings.forEach(ring => {
-          ring.userData.phase += 0.015;
+          ring.userData.phase += 0.016;
           if (ring.userData.phase > 1) ring.userData.phase = 0;
-          const s = ring.userData.phase * 2.2;
+          const s = 0.5 + ring.userData.phase * 2.8;
           ring.scale.set(s, s, s);
           ring.material.opacity = (1 - ring.userData.phase) * 0.45;
         });
@@ -707,13 +1274,11 @@
             }
           },
           plugins: {
-            legend: {
-              labels: { color: '#cbd5e1', font: { size: 11 } }
-            },
+            legend: { labels: { color: '#cbd5e1', font: { size: 11 } } },
             tooltip: {
               callbacks: {
                 title: (items) => `${items[0].label} Hz Resonance`,
-                label: (ctx) => `Mode Type: ${ctx.dataset.label} (Magnitude: ${ctx.raw} dB)`
+                label: (ctx) => `Mode: ${ctx.dataset.label} (Magnitude: ${ctx.raw} dB)`
               }
             }
           }
@@ -722,7 +1287,7 @@
     }
 
     // ==============================================================
-    // RECALCULATE ACOUSTICS & UPDATE UI
+    // RECALCULATE PHYSICS & UPDATE SCENE
     // ==============================================================
     function recalculate() {
       // 1. Text displays
@@ -737,6 +1302,54 @@
 
       const vol = state.L * state.W * state.H;
       document.getElementById('badgeVolume').innerText = `${vol.toFixed(1)} m³`;
+
+      // Equilateral Triangle Verification
+      const spkZ = -state.L / 2 + state.speakerWall;
+      const chairZ = -state.L / 2 + state.listenerY;
+      const dZ = chairZ - spkZ; // distance from speaker plane to listener plane
+      const dLR = state.speakerSpread; // base distance
+      const halfLR = dLR / 2;
+      const dLEar = Math.sqrt(halfLR * halfLR + dZ * dZ); // distance from speaker to ear
+
+      // Included apex angle (in degrees)
+      const apexAngleDeg = (2 * Math.asin(Math.min(1, halfLR / Math.max(0.01, dLEar)))) * (180 / Math.PI);
+
+      document.getElementById('valTriBase').innerText = `${dLR.toFixed(2)}m`;
+      document.getElementById('valTriLeg').innerText = `${dLEar.toFixed(2)}m`;
+      document.getElementById('valTriAngle').innerText = `${apexAngleDeg.toFixed(1)}°`;
+
+      const triDiff = Math.abs(dLR - dLEar);
+      const badgeTri = document.getElementById('badgeTriangleMatch');
+      if (triDiff < 0.06 && Math.abs(apexAngleDeg - 60) <= 2.5) {
+        badgeTri.innerText = `🎯 Perfect ${apexAngleDeg.toFixed(1)}° Match`;
+        badgeTri.className = "font-mono font-bold text-emerald-400";
+      } else if (apexAngleDeg > 65) {
+        badgeTri.innerText = `⚠️ Too Wide (${apexAngleDeg.toFixed(1)}° - Hole in Center)`;
+        badgeTri.className = "font-mono font-bold text-amber-400";
+      } else if (apexAngleDeg < 55) {
+        badgeTri.innerText = `⚠️ Too Narrow (${apexAngleDeg.toFixed(1)}° - Narrow Soundstage)`;
+        badgeTri.className = "font-mono font-bold text-amber-400";
+      } else {
+        badgeTri.innerText = `Good (${apexAngleDeg.toFixed(1)}°)`;
+        badgeTri.className = "font-mono font-bold text-cyan-400";
+      }
+
+      // Auto-Aim Laser Lock to Ears
+      if (state.autoAim) {
+        // Horizontal Toe-in
+        const computedToeIn = Math.round(Math.atan2(halfLR, Math.max(0.1, dZ)) * (180 / Math.PI));
+        state.toeInDeg = Math.max(0, Math.min(45, computedToeIn));
+        inputToeIn.value = state.toeInDeg;
+        document.getElementById('valToeIn').innerText = `${state.toeInDeg}° In`;
+
+        // Vertical Tilt (ear at 1.18m, speaker tweeter at standHeight + 0.28m)
+        const spkY = state.standHeight + 0.28;
+        const earY = 1.18;
+        const computedTilt = Math.round(Math.atan2(earY - spkY, Math.max(0.1, dZ)) * (180 / Math.PI));
+        state.verticalTiltDeg = Math.max(-15, Math.min(15, computedTilt));
+        inputTilt.value = state.verticalTiltDeg;
+        document.getElementById('valTilt').innerText = `${state.verticalTiltDeg > 0 ? '+' : ''}${state.verticalTiltDeg}°`;
+      }
 
       // 2. Bolt Ratio Check
       const dims = [state.L, state.W, state.H].sort((a,b)=>a-b);
@@ -756,7 +1369,7 @@
       } else if (state.speakerWall > 0.85) {
         sbirDesc.innerText = `Far placement: SBIR notch pushed down into sub-bass (< 95 Hz) easily absorbed by corner bass traps.`;
       } else {
-        sbirDesc.innerText = `Critical SBIR Risk: Quarter-wave notch lands directly in punchy kick/bass range. Move monitors > 0.9m or flush < 0.2m.`;
+        sbirDesc.innerText = `Critical SBIR Risk: Quarter-wave notch lands directly in punchy kick/bass range. Move monitors > 0.9m or push < 0.2m.`;
       }
 
       // 4. RT60 Reverberation
@@ -805,10 +1418,10 @@
       document.getElementById('statClusters').innerText = `${clusters} Clusters`;
 
       // Update 3D Geometry
-      build3DRoom();
+      buildFullStudio();
 
       // Update Chart.js RTA
-      updateChartData(modes, fs);
+      updateChartData(modes);
     }
 
     function computeModes(L, W, H, maxF) {
@@ -835,30 +1448,29 @@
       return list;
     }
 
-    function updateChartData(modes, fs) {
+    function updateChartData(modes) {
       if (!rtaChart) return;
       const labels = [];
       const dataAxial = [];
       const dataTangential = [];
       const dataOblique = [];
 
-      // Take first 35 modes for clean bar spacing
       const displayModes = modes.slice(0, 35);
 
       displayModes.forEach(m => {
         labels.push(m.f.toFixed(1));
         if (m.type === 'Axial') {
-          dataAxial.push(10); // 10 relative units (0 dB)
+          dataAxial.push(10);
           dataTangential.push(null);
           dataOblique.push(null);
         } else if (m.type === 'Tangential') {
           dataAxial.push(null);
-          dataTangential.push(7); // -3 dB
+          dataTangential.push(7);
           dataOblique.push(null);
         } else {
           dataAxial.push(null);
           dataTangential.push(null);
-          dataOblique.push(5); // -6 dB
+          dataOblique.push(5);
         }
       });
 
@@ -869,7 +1481,7 @@
       rtaChart.update();
     }
 
-    // Initialize entire suite on load
+    // Init on Page Load
     window.addEventListener('DOMContentLoaded', () => {
       initChart();
       init3D();
