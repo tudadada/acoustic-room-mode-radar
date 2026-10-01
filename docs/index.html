@@ -68,6 +68,17 @@
       cursor: pointer;
       border: 2px solid #070f14;
     }
+
+    /* Resizer & Dragging styles */
+    .resizer-active {
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      cursor: col-resize !important;
+    }
+    .resizer-active * {
+      cursor: col-resize !important;
+      user-select: none !important;
+    }
   </style>
 </head>
 <body class="bg-studio-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-cyan-500 selection:text-black">
@@ -110,11 +121,11 @@
     </div>
   </header>
 
-  <!-- Main View -->
-  <main class="flex-1 max-w-[1720px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 xl:grid-cols-12 gap-6">
+  <!-- Main View with Resizable Splitter Layout -->
+  <main id="mainLayout" class="flex-1 max-w-[1920px] w-full mx-auto p-3 lg:p-5 flex flex-col xl:flex-row gap-0 items-start relative">
 
-    <!-- LEFT SIDEBAR: Controls & Meters (4 Cols) -->
-    <div class="xl:col-span-4 space-y-5">
+    <!-- LEFT SIDEBAR: Controls & Meters (Draggable & Collapsible) -->
+    <aside id="leftSidebar" class="w-full xl:w-[440px] xl:shrink-0 space-y-5 xl:pr-3 overflow-hidden transition-[opacity] duration-150 relative">
 
       <!-- Room Dimensions Card -->
       <div class="bg-studio-900 border border-studio-800 rounded-2xl p-5 shadow-xl space-y-4">
@@ -308,10 +319,27 @@
         </div>
       </div>
 
+    </aside>
+
+    <!-- RESIZABLE SPLITTER (DRAG TO RESIZE & COLLAPSE) -->
+    <div id="sidebarResizer" class="hidden xl:flex items-center justify-center w-5 self-stretch cursor-col-resize select-none relative group z-20 mx-0.5" title="Kéo chuột để thay đổi độ rộng menu hoặc bấm nút mũi tên để ẩn/hiện">
+      <div class="w-1.5 h-full bg-studio-800 rounded-full group-hover:bg-cyan-500 group-active:bg-cyan-400 transition-colors shadow-sm flex items-center justify-center">
+        <!-- 3 drag grip dots -->
+        <div class="space-y-1.5 opacity-50 group-hover:opacity-100">
+          <div class="w-1 h-1 rounded-full bg-slate-300"></div>
+          <div class="w-1 h-1 rounded-full bg-slate-300"></div>
+          <div class="w-1 h-1 rounded-full bg-slate-300"></div>
+        </div>
+      </div>
+
+      <!-- Quick Collapse / Expand Toggle Button on Splitter -->
+      <button id="btnToggleSidebar" onclick="toggleSidebarCollapse()" title="Ẩn / Hiện thanh công cụ" class="absolute top-8 -right-3 z-30 w-7 h-7 rounded-full bg-studio-900 border border-studio-700 hover:border-cyan-500 hover:text-cyan-400 text-slate-300 shadow-xl flex items-center justify-center text-xs font-bold transition transform active:scale-95">
+        ◀
+      </button>
     </div>
 
-    <!-- RIGHT PANEL: Realistic 3D Studio & RTA Spectrum (8 Cols) -->
-    <div class="xl:col-span-8 space-y-6">
+    <!-- RIGHT PANEL: Realistic 3D Studio & RTA Spectrum (Fluid Width) -->
+    <section id="rightPanel" class="flex-1 min-w-0 w-full space-y-6 xl:pl-3">
 
       <!-- 3D Realistic Viewport -->
       <div class="bg-studio-900 border border-studio-800 rounded-2xl p-5 shadow-2xl space-y-3 relative overflow-hidden">
@@ -321,11 +349,14 @@
               <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
               Realistic 3D Studio Simulator
             </h2>
-            <span class="text-[11px] text-slate-400 font-mono">(Hover to Select • Drag to Move Objects • Rotate View)</span>
+            <span class="text-[11px] text-slate-400 font-mono hidden sm:inline">(Hover • Drag Objects • Rotate 3D View)</span>
           </div>
 
           <!-- 3D Display Controls -->
-          <div class="flex items-center gap-1.5 text-xs bg-studio-950 p-1 rounded-lg border border-studio-800">
+          <div class="flex items-center gap-1.5 text-xs bg-studio-950 p-1 rounded-lg border border-studio-800 flex-wrap">
+            <button id="btnExpandCollapseHeader" onclick="toggleSidebarCollapse()" class="px-2.5 py-1 rounded bg-studio-800 hover:bg-studio-700 text-slate-300 border border-studio-700 flex items-center gap-1 transition" title="Ẩn/Hiện thanh menu bên trái">
+              <span id="iconExpandCollapse">◀</span> <span id="textExpandCollapse" class="hidden md:inline">Thu Gọn Menu</span>
+            </button>
             <button onclick="setCameraView('perspective')" class="px-2.5 py-1 rounded hover:bg-studio-800 text-slate-300 transition">Perspective</button>
             <button onclick="setCameraView('top')" class="px-2.5 py-1 rounded hover:bg-studio-800 text-slate-300 transition">Top View</button>
             <button onclick="setCameraView('sweetspot')" class="px-2.5 py-1 rounded hover:bg-studio-800 text-cyan-400 transition">Sweet Spot</button>
@@ -402,7 +433,12 @@
         </div>
       </div>
 
-    </div>
+    </section>
+
+    <!-- Floating Button to restore Sidebar when collapsed -->
+    <button id="btnFloatingExpand" onclick="toggleSidebarCollapse()" class="hidden fixed bottom-6 left-6 z-40 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-black font-extrabold shadow-2xl shadow-cyan-500/30 flex items-center gap-2 text-xs transition transform hover:scale-105 active:scale-95">
+      <span>🎛️</span> Mở Bảng Điều Khiển
+    </button>
 
   </main>
 
@@ -1202,9 +1238,16 @@
 
     function onWindowResize() {
       const container = document.getElementById('threeContainer');
-      camera.aspect = container.clientWidth / container.clientHeight;
+      if (!container || !renderer || !camera) return;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      if (w === 0 || h === 0) return;
+      camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setSize(w, h);
+      if (rtaChart) {
+        rtaChart.resize();
+      }
     }
 
     function animate3D() {
@@ -1479,6 +1522,108 @@
       rtaChart.data.datasets[1].data = dataTangential;
       rtaChart.data.datasets[2].data = dataOblique;
       rtaChart.update();
+    }
+
+    // ==============================================================
+    // SIDEBAR RESIZING & DRAGGABLE SPLITTER LOGIC
+    // ==============================================================
+    const sidebar = document.getElementById('leftSidebar');
+    const resizer = document.getElementById('sidebarResizer');
+    const mainLayout = document.getElementById('mainLayout');
+    const btnToggleSidebar = document.getElementById('btnToggleSidebar');
+    const btnExpandCollapseHeader = document.getElementById('btnExpandCollapseHeader');
+    const iconExpandCollapse = document.getElementById('iconExpandCollapse');
+    const textExpandCollapse = document.getElementById('textExpandCollapse');
+    const btnFloatingExpand = document.getElementById('btnFloatingExpand');
+
+    let isResizing = false;
+    let isSidebarCollapsed = false;
+    let savedSidebarWidth = 440; // Default width in px
+
+    if (resizer) {
+      resizer.addEventListener('pointerdown', (e) => {
+        if (e.target === btnToggleSidebar || btnToggleSidebar.contains(e.target)) return;
+        isResizing = true;
+        document.body.classList.add('resizer-active');
+        document.addEventListener('pointermove', onResizerPointerMove);
+        document.addEventListener('pointerup', onResizerPointerUp);
+        e.preventDefault();
+      });
+    }
+
+    function onResizerPointerMove(e) {
+      if (!isResizing) return;
+      const mainRect = mainLayout.getBoundingClientRect();
+      const newWidth = e.clientX - mainRect.left;
+
+      // Collapse if dragged very small
+      if (newWidth < 180) {
+        collapseSidebar();
+        return;
+      }
+
+      if (isSidebarCollapsed) {
+        expandSidebar();
+      }
+
+      const minW = 280;
+      const maxW = Math.min(850, window.innerWidth * 0.65);
+      const clampedWidth = Math.max(minW, Math.min(maxW, newWidth));
+      savedSidebarWidth = clampedWidth;
+      sidebar.style.width = `${clampedWidth}px`;
+
+      onWindowResize();
+    }
+
+    function onResizerPointerUp() {
+      if (isResizing) {
+        isResizing = false;
+        document.body.classList.remove('resizer-active');
+        document.removeEventListener('pointermove', onResizerPointerMove);
+        document.removeEventListener('pointerup', onResizerPointerUp);
+        onWindowResize();
+      }
+    }
+
+    function toggleSidebarCollapse() {
+      if (isSidebarCollapsed) {
+        expandSidebar();
+      } else {
+        collapseSidebar();
+      }
+    }
+
+    function collapseSidebar() {
+      isSidebarCollapsed = true;
+      sidebar.style.width = '0px';
+      sidebar.style.opacity = '0';
+      sidebar.style.display = 'none';
+      if (btnToggleSidebar) btnToggleSidebar.innerHTML = '▶';
+      if (iconExpandCollapse) iconExpandCollapse.innerText = '▶';
+      if (textExpandCollapse) textExpandCollapse.innerText = 'Mở Menu';
+      if (btnFloatingExpand) btnFloatingExpand.classList.remove('hidden');
+      setTimeout(onWindowResize, 50);
+    }
+
+    function expandSidebar() {
+      isSidebarCollapsed = false;
+      sidebar.style.display = '';
+      sidebar.style.width = `${savedSidebarWidth || 440}px`;
+      sidebar.style.opacity = '1';
+      if (btnToggleSidebar) btnToggleSidebar.innerHTML = '◀';
+      if (iconExpandCollapse) iconExpandCollapse.innerText = '◀';
+      if (textExpandCollapse) textExpandCollapse.innerText = 'Thu Gọn Menu';
+      if (btnFloatingExpand) btnFloatingExpand.classList.add('hidden');
+      setTimeout(onWindowResize, 50);
+    }
+
+    // Modern ResizeObserver to seamlessly adapt 3D Canvas
+    const threeContainerElem = document.getElementById('threeContainer');
+    if (window.ResizeObserver && threeContainerElem) {
+      const ro = new ResizeObserver(() => {
+        onWindowResize();
+      });
+      ro.observe(threeContainerElem);
     }
 
     // Init on Page Load
